@@ -1,4 +1,4 @@
-# Data Mainte System
+# Data Maintenance System
 
 ## Overview
 This project is based on **CRUD with MVC pattern**.
