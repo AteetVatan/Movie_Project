@@ -1,7 +1,11 @@
-# Movie Management System
+# Data Mainte System
 
 ## Overview
-This project is a **Movie Management System** that allows users to **manage and interact with a collection of movies**. It provides a **user-friendly menu-driven interface** for performing operations such as viewing, adding, editing, or deleting movies.
+This project is based on **CRUD with MVC pattern**.
+It allows users to **manage and interact with a collection of data**. 
+It provides a **user-friendly menu-driven interface** 
+for performing operations such as viewing, adding, editing, or deleting data.
+The architecture is designed using a modular approach with separate controllers, enumerations, helpers, and models.
 
 ## Features
 - Read movie data from storage
@@ -12,14 +16,38 @@ This project is a **Movie Management System** that allows users to **manage and 
 ## Project Structure
 ```
 Movie_Project/
-│-- movies.py  # Main script
-│-- base/
-│   ├── movies_controller.py  # Handles movie operations
-│-- data/
-│   ├── data_handler.py  # Reads and writes movie data
-│-- helpers/
-│   ├── main_print.py  # Handles user interface printing
-│-- .venv/  # Virtual environment (optional)
+│── controllers/
+│   │── base_controller.py
+│   │── menu_controller.py
+│   │── movies_controller.py
+│   └── managers/
+│       │── menu_manager.py
+│── enumerations/
+│   │── app_types.py
+│── helpers/
+│   │── base_print_input_helper.py
+│   │── data_helpers.py
+│── models/
+│   │── base_model.py
+│   │── file_handler_model.py
+│   │── menu_operation_output_model.py
+│   │── movie_model.py
+│   └── managers/
+│       │── data_manager.py
+│── views/
+│   │── movie_view.py
+│── validation/
+│   │── movie_validation_manager.py
+│── data/
+│   │── movie.json
+│   │── movie_backup.json
+│── constants/
+│   │── constant_strings.py
+│   │── json_constants.py
+│── movies.py
+│── requirements.txt
+│── .gitignore
+│── README.md
 ```
 
 ## Installation
@@ -45,6 +73,11 @@ To start the program, run:
 python movies.py
 ```
 Follow the on-screen menu to interact with the movie collection.
+
+## Future Improvements
+* Implement a database for persistent movie storage.
+* Add exception handling and logging for better error tracking. 
+* Extend support for additional app types (e.g., TV Shows, Documentaries).
 
 ## Contributing
 Feel free to submit **pull requests** or open **issues** for improvements.

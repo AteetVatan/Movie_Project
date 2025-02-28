@@ -1,4 +1,4 @@
 """constants package"""
-from data.data_handler import DataHandler
+from models.file_handler_model import FileHandlerModel
 
-__all__ = ["DataHandler"]
+__all__ = ["FileHandlerModel"]
