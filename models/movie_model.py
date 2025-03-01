@@ -16,6 +16,7 @@ class MovieModel(BaseModel):
     """The MovieModel Class."""
 
     def __init__(self, file_name, file_path):
+        self.data = None
         super().__init__(file_name, file_path)
 
     # region CREATE
@@ -27,8 +28,8 @@ class MovieModel(BaseModel):
                                                             rating=float(rating),
                                                             release_year=int(year))
             MovieView.data_added(new_movie=movie)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def add_data_valid_movie(self, movie_name):
         """Method to validate the existing movie name."""
@@ -38,8 +39,8 @@ class MovieModel(BaseModel):
                                     in DataManager.data_by_key(self.data, Jc.title()))
             if movie_already_exists:
                 raise ValueError(Cs.MOVIE_EXIST)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     # endregion CREATE
 
@@ -71,8 +72,8 @@ class MovieModel(BaseModel):
                     return
                 raise ValueError(Cs.MOVIE_SEARCH_ERROR.format(KEY1=search_text))
             MovieView.display_search_data(result_found)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def sort_data(self, key, reverse=False):
         """Method to sort the data.
@@ -84,7 +85,7 @@ class MovieModel(BaseModel):
         sorted_list = sorted(movie_rating_list, key=lambda x: x[1], reverse=reverse)
         MovieView.display_sorted_data(sorted_list)
 
-    def data_filter(self, rating, start_year, end_year) -> bool:
+    def data_filter(self, rating, start_year, end_year):
         """Method the filter the movie data by ratings, start year and end year."""
 
         try:
@@ -110,8 +111,8 @@ class MovieModel(BaseModel):
                 MovieView.movie_error(Cs.MOVIE_FILTER_NO_RESULT)
             else:
                 MovieView.display_filtered_data(filtered_data)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def data_stats(self):
         """
@@ -130,8 +131,8 @@ class MovieModel(BaseModel):
                                          worst_movies=worst_movies,
                                          avg_rating=avg_rating,
                                          median_rating=median_rating)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def show_data_histogram(self):
         """Method to generate Movie data Histogram."""
@@ -145,8 +146,8 @@ class MovieModel(BaseModel):
             # Two lines to make our compiler able to draw:
             plt.savefig(sys.stdout.buffer)
             sys.stdout.flush()
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     # endregion READ
 
@@ -159,8 +160,8 @@ class MovieModel(BaseModel):
                            in DataManager.data_by_key(self.data, Jc.title()))
             if not movie_exist:
                 raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=update_movie_name))
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def update_data(self, update_movie_name, rating):
         """Method to Update existing Movie."""
@@ -170,16 +171,16 @@ class MovieModel(BaseModel):
                                                                title=update_movie_name,
                                                                rating=float(rating))
             MovieView.update_movie_complete(update_movie_name=update_movie_name)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     def save_data(self) -> bool:
         """Method to save movie."""
         try:
             self.file_handler.write_data(self.data)
             MovieView.save_movie_data_complete()
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     # endregion UPDATE
 
@@ -198,8 +199,8 @@ class MovieModel(BaseModel):
                                                                    movie_name)
                 success = True
             MovieView.movie_delete_operation(movie_name=movie_name, success=success)
-        except ValueError:
-            raise
+        except ValueError as e:
+            raise e
 
     # endregion DELETE
 

@@ -8,10 +8,10 @@ for performing operations such as viewing, adding, editing, or deleting data.
 The architecture is designed using a modular approach with separate controllers, enumerations, helpers, and models.
 
 ## Features
-- Read movie data from storage
-- Display an interactive user menu
-- Perform CRUD (Create, Read, Update, Delete) operations on movies
-- Validates user input for accurate operations
+- CRUD: Create, Read, Update, Delete.
+- Project is based on MVC Pattern.
+- Analytics: Top-rated data, least-rated data etc.
+- Persistent Storage: Now only JSON file—More to come.
 
 ## Project Structure
 ```
