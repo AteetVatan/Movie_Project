@@ -70,7 +70,7 @@ pip install -r requirements.txt
 ## Usage
 To start the program, run:
 ```sh
-python movies.py
+python main.py
 ```
 Follow the on-screen menu to interact with the movie collection.
 

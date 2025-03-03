@@ -1,7 +1,7 @@
 """The MovieView Module."""
 from helpers import PrintInputHelper as Ph
 from constants import ConstantStrings as Cs
-from constants.json_constants import JsonConstants as Jc
+from constants.data_constants import DataConstants as Jc
 
 
 class MovieView:
@@ -23,9 +23,9 @@ class MovieView:
         Ph.pr_bold(Cs.MOVIE_TOTAL.format(KEY1=movie_length))
         for item in data.values():
             title = item[Jc.title()]
-            release_year = item[Jc.release_year()]
+            year = item[Jc.year()]
             rating = float(item[Jc.rating()])
-            Ph.pr_menu(f"\t{title} ({release_year}): {rating:.2f}")
+            Ph.pr_menu(f"\t{title} ({year}): {rating:.2f}")
 
     @staticmethod
     def random_movie(random_movie_data):

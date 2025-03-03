@@ -1,7 +1,6 @@
 """Module for Menu Controller."""
 from constants import ConstantStrings
-from controllers.movies_controller import MoviesController
-from enumerations import AppTypes
+from controllers.base_controller import BaseController
 from helpers import PrintInputHelper as bp
 from models import MenuOperationOutputModel
 
@@ -10,10 +9,8 @@ class MenuController:
     """Class for Menu."""
     __controller_obj = None
 
-    def __init__(self, app_type: AppTypes):
-        if app_type is AppTypes.MOVIE:
-            movie_obj = MoviesController()
-            self.__controller_obj = movie_obj
+    def __init__(self, controller_obj: BaseController):
+        self.__controller_obj = controller_obj
 
     @property
     def controller(self):

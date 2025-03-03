@@ -2,10 +2,11 @@
 import os
 
 from controllers.base_controller import BaseController
+from enumerations import FileTypes
 from validation import MovieValidationManager as Mv
 from helpers import PrintInputHelper
 from helpers.base_print_input_helper import PrintInputHelper as Ph
-from constants import JsonConstants as Jc, ConstantStrings as Cs
+from constants import DataConstants as Jc, ConstantStrings as Cs
 from models import MovieModel
 from models import MenuOperationOutputModel
 
@@ -16,51 +17,52 @@ class MoviesController(BaseController):
     __file_name = "../data/movie.json"
     __file_path = os.path.join(os.getcwd(), "data", __file_name)
 
-    def __init__(self):
+    def __init__(self, file_path="", file_type=FileTypes.JSON):
         super().__init__(self.__data_desc)
-        self.movie_model = MovieModel(self.__file_name, self.__file_path)
+        if file_path:
+            self.__file_path = file_path
+            self.__file_name = os.path.basename(file_path)
+        self.movie_model = MovieModel(self.__file_path, file_type)
 
-    # region CREATE
     def add_data(self):
         """Adds a new movie to the data."""
         try:
-            # MOVIE_NAME
-            while True:
-                try:
-                    new_movie = Ph.pr_input(Cs.NEW_MOVIE_NAME_ENTER)
-                    if not new_movie:
-                        return MenuOperationOutputModel(operation_wait=False)
-                    self.movie_model.add_data_valid_movie(new_movie)
-                    break
-                except ValueError as e:
-                    self.movie_model.movie_model_error(e.args[0])
-
-            # MOVIE_YEAR
-            while True:
-                try:
-                    year = Ph.pr_input(Cs.MOVIE_YEAR_ENTER)
-                    if not year:
-                        return MenuOperationOutputModel(operation_wait=False)
-                    MovieModel.valid_movie_year(year)
-                    break
-                except ValueError as e:
-                    self.movie_model.movie_model_error(e.args[0])
-
-            # MOVIE_RATING
-            while True:
-                try:
-                    rating = Ph.pr_input(Cs.MOVIE_RATING_ENTER)
-                    if not rating:
-                        return MenuOperationOutputModel(operation_wait=False)
-                    MovieModel.valid_rating(rating)
-                    break
-                except ValueError as e:
-                    self.movie_model.movie_model_error(e.args[0])
-
-            self.movie_model.add_data(movie=new_movie, year=year, rating=rating)
+            # Get user Inputs
+            result = self.get_console_user_inputs()
+            if isinstance(result, MenuOperationOutputModel):
+                return result
+            title, year, rating = result
+            # Add the movie data
+            self.movie_model.add_data(title=title, year=year, rating=rating)
         except ValueError as e:
             self.movie_model.movie_model_error(e.args[0])
         return MenuOperationOutputModel()
+
+    # Helper function to get and validate user input
+    def get_valid_input(self, prompt, validation_func):
+        while True:
+            user_input = Ph.pr_input(prompt)
+            if not user_input:
+                return None  # Exit if input is empty
+            validation_func(user_input)
+            return user_input
+
+    def get_console_user_inputs(self):
+        # MOVIE_NAME
+        title = self.get_valid_input(Cs.NEW_MOVIE_NAME_ENTER, self.movie_model.add_data_valid_movie)
+        if title is None:
+            return MenuOperationOutputModel(operation_wait=False)
+
+        # MOVIE_YEAR
+        year = self.get_valid_input(Cs.MOVIE_YEAR_ENTER, MovieModel.valid_movie_year)
+        if year is None:
+            return MenuOperationOutputModel(operation_wait=False)
+
+        # MOVIE_RATING
+        rating = self.get_valid_input(Cs.MOVIE_RATING_ENTER, MovieModel.valid_rating)
+        if rating is None:
+            return MenuOperationOutputModel(operation_wait=False)
+        return title, year, rating
 
     # endregion CREATE
 
@@ -96,7 +98,7 @@ class MoviesController(BaseController):
         """
         while True:
             try:
-                if key == Jc.release_year():
+                if key == Jc.year():
                     usr_input = Ph.pr_input(Cs.MOVIE_SORT_YEAR_PROMPT).lower()
                     if usr_input == "":
                         return MenuOperationOutputModel(operation_wait=False)
@@ -174,30 +176,14 @@ class MoviesController(BaseController):
     # endregion READ
 
     # region UPDATE
-    def update_data(self):
+    def update_data(self, **kwargs):
         """Method to Update existing Movie."""
-        while True:
-            try:
-                update_movie_name = Ph.pr_input(Cs.MOVIE_NAME_UPDATE)
-                if not update_movie_name:
-                    return MenuOperationOutputModel(operation_wait=False)
-                self.movie_model.update_data_valid_movie(update_movie_name)
-                break
-            except ValueError as e:
-                self.movie_model.movie_model_error(e.args[0])
-
-        while True:
-            try:
-                rating = Ph.pr_input(Cs.MOVIE_RATING_ENTER)
-                if not rating:
-                    return MenuOperationOutputModel(operation_wait=False)
-                MovieModel.valid_rating(rating)
-                break
-            except ValueError as e:
-                self.movie_model.movie_model_error(e.args[0])
-
         try:
-            self.movie_model.update_data(update_movie_name=update_movie_name, rating=rating)
+            title, rating = kwargs.get(Jc.title()), kwargs.get(Jc.rating())
+            # validation
+            self.movie_model.update_data_valid_movie(title)
+            MovieModel.valid_rating(rating)
+            self.movie_model.update_data(title=title, rating=rating)
         except ValueError as e:
             self.movie_model.movie_model_error(e.args[0])
 
@@ -214,14 +200,13 @@ class MoviesController(BaseController):
     # endregion UPDATE
 
     # region DELETE
-    def delete_data(self):
+    def delete_data(self, title=""):
         """Method to delete the existing movie."""
         while True:
             try:
-                del_movie = Ph.pr_input(Cs.MOVIE_DELETE)
-                if not del_movie:
-                    return MenuOperationOutputModel(operation_wait=False)
-                self.movie_model.delete_data(del_movie)
+                if not title:
+                    raise ValueError("Movie name cannot be empty.")
+                self.movie_model.delete_data(title)
                 break
             except ValueError as e:
                 self.movie_model.movie_model_error(e.args[0])

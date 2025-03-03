@@ -3,7 +3,7 @@ Inheritance."""
 from abc import ABC, abstractmethod
 
 from controllers.managers import MenuManager
-from constants.json_constants import JsonConstants as Jc
+from constants.data_constants import DataConstants as Jc
 
 
 class BaseController(ABC):
@@ -116,8 +116,8 @@ class BaseController(ABC):
             8: {"method": self.search_data, "desc": f"Search {data_desc}".title()},
             9: {"method": self.sort_data, "kwargs": {"key": Jc.rating()},
                 "desc": f"{data_desc}s sorted by {Jc.rating()}".title()},
-            10: {"method": self.sort_data, "kwargs": {"key": Jc.release_year()},
-                 "desc": f"{data_desc}s sorted by {Jc.release_year()}".title()},
+            10: {"method": self.sort_data, "kwargs": {"key": Jc.year()},
+                 "desc": f"{data_desc}s sorted by {Jc.year()}".title()},
             11: {"method": self.data_filter, "desc": f"filter {data_desc}".title()},
             12: {"method": self.show_data_histogram,
                  "desc": f"Show {data_desc}s Histogram".title()},

@@ -31,7 +31,7 @@ class DataManager:
     @staticmethod
     def base_add_data_operation(data, **kwargs):
         """Adds the new data."""
-        item = {**kwargs}  # {"title": "12 Angry Men","rating": 9.5,"release_year": 2010}
+        item = {**kwargs}  # {"title": "12 Angry Men","rating": 9.5,"year": 2010}
         length = len(data)
         data[length + 1] = item
         return data

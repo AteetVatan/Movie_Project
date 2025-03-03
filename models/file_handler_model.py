@@ -1,14 +1,14 @@
-"""Module to read and write data"""
-import json
+"""Module fom FileHandlerModel Interface"""
 import os
+from abc import ABC, abstractmethod
 
 
-class FileHandlerModel:
+class FileHandlerModel(ABC):
     """Class responsible for file operations"""
 
-    def __init__(self, file_name, filepath):
-        self.__file_name = file_name
-        self.__file_path = filepath
+    def __init__(self, file_path):
+        self.__file_name = os.path.basename(file_path)
+        self.__file_path = file_path
 
     @property
     def file_name(self):
@@ -20,31 +20,12 @@ class FileHandlerModel:
         """Method to get JSON file path"""
         return self.__file_path
 
+    @abstractmethod
     def read_data(self, file_path: str = None):
-        """Method to read data fo file"""
-        d = None
-        try:
-            if not file_path:
-                file_path = self.__file_path
+        """Method to read file data."""
+        pass
 
-            with open(file_path, encoding="utf-8") as data:
-                d = json.load(data)
-        except FileNotFoundError as f:
-            print(f)
-        except IOError as e:
-            print("I/O error occurred: ", os.strerror(e.errno))
-        return d
-
+    @abstractmethod
     def write_data(self, data, file_path: str = None):
-        """Method to write data fo file"""
-        try:
-            if not file_path:
-                file_path = self.__file_path
-            with open(file_path, "w", encoding="utf-8") as file:
-                json.dump(data, file, indent=4)
-        except FileNotFoundError as f:
-            print(f)
-        except IOError as e:
-            print("I/O error occurred: ", os.strerror(e.errno))
-        except Exception as e:
-            print(e)
+        """Method to write data to file"""
+        pass

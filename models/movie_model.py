@@ -4,10 +4,11 @@ from random import randint
 
 from matplotlib import pyplot as plt
 
+from enumerations import FileTypes
 from models.managers import DataManager
 from models.base_model import BaseModel
 from views import MovieView
-from constants import JsonConstants as Jc, ConstantStrings as Cs
+from constants import DataConstants as Jc, ConstantStrings as Cs
 from validation import MovieValidationManager as Mv
 from helpers import DataHelpers
 
@@ -15,19 +16,19 @@ from helpers import DataHelpers
 class MovieModel(BaseModel):
     """The MovieModel Class."""
 
-    def __init__(self, file_name, file_path):
+    def __init__(self, file_path, file_type = FileTypes.JSON):
         self.data = None
-        super().__init__(file_name, file_path)
+        super().__init__(file_path,file_type)
 
     # region CREATE
-    def add_data(self, movie, year, rating):
+    def add_data(self, title, year, rating):
         """Adds a new movie to the data."""
         try:
             self.data = DataManager.base_add_data_operation(self.data,
-                                                            title=movie,
+                                                            title=title,
                                                             rating=float(rating),
-                                                            release_year=int(year))
-            MovieView.data_added(new_movie=movie)
+                                                            year=int(year))
+            MovieView.data_added(new_movie=title)
         except ValueError as e:
             raise e
 
@@ -103,7 +104,7 @@ class MovieModel(BaseModel):
             movie_rating_year_list = DataManager.data_by_keys(self.data,
                                                               Jc.title(),
                                                               Jc.rating(),
-                                                              Jc.release_year())
+                                                              Jc.year())
             filtered_data = list(filter(lambda item1:
                                         all(x(item1) for x in dynamic_filter_dict.values()),
                                         movie_rating_year_list))
@@ -163,14 +164,14 @@ class MovieModel(BaseModel):
         except ValueError as e:
             raise e
 
-    def update_data(self, update_movie_name, rating):
+    def update_data(self, title, rating):
         """Method to Update existing Movie."""
         try:
             self.data = DataManager.base_update_data_operation(self.data,
                                                                Jc.title(),
-                                                               title=update_movie_name,
+                                                               title=title,
                                                                rating=float(rating))
-            MovieView.update_movie_complete(update_movie_name=update_movie_name)
+            MovieView.update_movie_complete(update_movie_name=title)
         except ValueError as e:
             raise e
 

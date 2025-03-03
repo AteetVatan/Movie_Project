@@ -1,14 +1,20 @@
 """The Base Model Module."""
+import os
 from abc import ABC, abstractmethod
 
-from models import FileHandlerModel
+from enumerations import FileTypes
+from helpers import PrintInputHelper as Ph
+from models import JsonFileHandlerModel
+from models.csv_file_handler_model import CsvFileHandlerModel
+from models.managers import FileManager
 
 
 class BaseModel(ABC):
     """The Base Model Class."""
 
-    def __init__(self, file_name, file_path):
-        self.__file_handler = FileHandlerModel(file_name, file_path)
+    def __init__(self, file_path, file_type = FileTypes.JSON):
+        self.__file_name = os.path.basename(file_path)
+        self.__file_handler = FileManager.get_file_handler(file_path, file_type)
         self.__data = self.file_handler.read_data()
 
     @property

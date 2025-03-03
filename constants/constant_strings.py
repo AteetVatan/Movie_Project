@@ -49,3 +49,6 @@ class ConstantStrings:
     GENERAL_ERROR = 'An unexpected error occurred: {error}'
     GENERAL_EMPTY_ERROR = '{KEY} cannot be empty.'
     GENERAL_MENU_CMD = '[Enter empty text for Menu.]'
+
+    #File error
+    FILE_NOT_EXIST = 'File does not exist on Path {KEY}'
