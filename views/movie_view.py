@@ -19,7 +19,7 @@ class MovieView:
     @staticmethod
     def movie_list_data(data):
         """Method to list Movie data."""
-        movie_length = len(data) + 1
+        movie_length = len(data)
         Ph.pr_bold(Cs.MOVIE_TOTAL.format(KEY1=movie_length))
         for item in data.values():
             title = item[Jc.title()]

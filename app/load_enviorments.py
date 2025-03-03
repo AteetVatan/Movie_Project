@@ -12,7 +12,7 @@ class LoadEnvironment:
 
     def __init__(self):
         load_dotenv()
-        self.load_animals_api_environment()
+        self.load_omdb_api_environment()
 
     @property
     def omdb_api_key_name(self):

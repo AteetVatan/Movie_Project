@@ -2,19 +2,24 @@
 import os
 from abc import ABC, abstractmethod
 
+import config
 from enumerations import FileTypes
-from helpers import PrintInputHelper as Ph
-from models import JsonFileHandlerModel
-from models.csv_file_handler_model import CsvFileHandlerModel
+from helpers.api_helper import ApiHelper
+from models.api_request_model import ApiRequestModel
 from models.managers import FileManager
 
 
 class BaseModel(ABC):
     """The Base Model Class."""
+    __api_handler: ApiHelper = None
+    __api_request_model: ApiRequestModel = None
 
     def __init__(self, file_path, file_type = FileTypes.JSON):
         self.__file_name = os.path.basename(file_path)
         self.__file_handler = FileManager.get_file_handler(file_path, file_type)
+        if config.USE_DATA_FROM_API:
+            self.__api_request_model = self.__api_request_model if self.__api_request_model else ApiRequestModel()
+            self.__api_handler = ApiHelper(self.__api_request_model)
         self.__data = self.file_handler.read_data()
 
     @property
@@ -31,6 +36,11 @@ class BaseModel(ABC):
     def file_handler(self):
         """The file_handler object getter"""
         return self.__file_handler
+
+    @property
+    def api_handler(self):
+        """The file_handler object getter"""
+        return self.__api_handler
 
     # region CREATE
     @abstractmethod

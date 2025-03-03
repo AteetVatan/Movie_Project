@@ -1,6 +1,7 @@
 """Module for Movie data CRUD methods."""
 import os
 
+import config
 from controllers.base_controller import BaseController
 from enumerations import FileTypes
 from validation import MovieValidationManager as Mv
@@ -27,12 +28,18 @@ class MoviesController(BaseController):
     def add_data(self):
         """Adds a new movie to the data."""
         try:
+            title = year = rating = None
             # Get user Inputs
             result = self.get_console_user_inputs()
             if isinstance(result, MenuOperationOutputModel):
                 return result
-            title, year, rating = result
-            # Add the movie data
+
+            # While using OMDB API, only Title search is enabled.
+            if config.USE_DATA_FROM_API:
+                title = result
+            else:
+                title, year, rating = result
+                # Add the movie data
             self.movie_model.add_data(title=title, year=year, rating=rating)
         except ValueError as e:
             self.movie_model.movie_model_error(e.args[0])
@@ -52,6 +59,10 @@ class MoviesController(BaseController):
         title = self.get_valid_input(Cs.NEW_MOVIE_NAME_ENTER, self.movie_model.add_data_valid_movie)
         if title is None:
             return MenuOperationOutputModel(operation_wait=False)
+
+        # While using OMDB API, only Title search is enabled.
+        if config.USE_DATA_FROM_API:
+            return title
 
         # MOVIE_YEAR
         year = self.get_valid_input(Cs.MOVIE_YEAR_ENTER, MovieModel.valid_movie_year)

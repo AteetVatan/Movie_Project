@@ -1,16 +1,16 @@
 """The JsonConstants Module."""
 class DataConstants:
     """The JsonConstants Class."""
-    __index = "index"
+    __id = "id"
     __title = "title"
     __rating = "rating"
     __year = "year"
-    __image = ""
+    __poster = "poster"
 
     @classmethod
-    def index(cls):
+    def id(cls):
         """Method to get the Title Key."""
-        return cls.__index
+        return cls.__id
 
     @classmethod
     def title(cls):
@@ -28,6 +28,6 @@ class DataConstants:
         return cls.__year
 
     @classmethod
-    def image(cls):
+    def poster(cls):
         """Method to get the Release Year Key."""
-        return cls.__image
+        return cls.__poster

@@ -29,11 +29,16 @@ class DataManager:
         return item[0][0]
 
     @staticmethod
-    def base_add_data_operation(data, **kwargs):
+    def base_add_data_operation(data, id_column="", **kwargs):
         """Adds the new data."""
-        item = {**kwargs}  # {"title": "12 Angry Men","rating": 9.5,"year": 2010}
-        length = len(data)
-        data[length + 1] = item
+        # {"title": "12 Angry Men","rating": 9.5,"year": 2010}
+        if id_column and id_column in kwargs:
+            id_column_val = kwargs.get(id_column)
+            del kwargs[id_column]
+        else:
+            id_column_val = str(len(data) + 1)
+
+        data[id_column_val] = kwargs
         return data
 
     @staticmethod

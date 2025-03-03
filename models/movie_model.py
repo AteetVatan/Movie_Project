@@ -4,7 +4,9 @@ from random import randint
 
 from matplotlib import pyplot as plt
 
-from enumerations import FileTypes
+import config
+from constants.odmb_constants import OmdbConstants
+from enumerations import FileTypes, OMDBApiParamTypes
 from models.managers import DataManager
 from models.base_model import BaseModel
 from views import MovieView
@@ -16,18 +18,38 @@ from helpers import DataHelpers
 class MovieModel(BaseModel):
     """The MovieModel Class."""
 
-    def __init__(self, file_path, file_type = FileTypes.JSON):
+    def __init__(self, file_path, file_type=FileTypes.JSON):
         self.data = None
-        super().__init__(file_path,file_type)
+        super().__init__(file_path, file_type)
 
     # region CREATE
-    def add_data(self, title, year, rating):
+    def add_data(self, title, id=None, year=None, rating=None):
         """Adds a new movie to the data."""
         try:
+            id_column = ""
+            if config.USE_DATA_FROM_API:
+                # use api to get year and rating for title
+
+                search_result = self.api_handler.get_data(title, OMDBApiParamTypes.TITLE)
+                movie_found = OmdbConstants.item_found(search_result)
+                id_column = OmdbConstants.get_data_constant_key(OmdbConstants.id())
+
+                if movie_found:
+                    id = search_result.get(OmdbConstants.id())
+                    title = search_result.get(OmdbConstants.title())
+                    rating = search_result.get(OmdbConstants.rating())
+                    year = search_result.get(OmdbConstants.year())
+                    poster = search_result.get(OmdbConstants.poster())
+                else:
+                    raise ValueError(f"Movie [{title}] not found in IMDB.")
+
             self.data = DataManager.base_add_data_operation(self.data,
+                                                            id_column=id_column,
+                                                            id=id,
                                                             title=title,
                                                             rating=float(rating),
-                                                            year=int(year))
+                                                            year=int(year),
+                                                            poster=poster)
             MovieView.data_added(new_movie=title)
         except ValueError as e:
             raise e
