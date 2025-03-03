@@ -7,7 +7,7 @@ from models.storage import StorageJson, StorageManager
 def main():
     """The Main wrapper function."""
     #file_name = "movie.json"
-    file_name = "movie.json"
+    file_name = "movie.csv"
     file_path = os.path.join(os.getcwd(), "data", file_name)
     storage_manager = StorageManager(file_path)
     storage = storage_manager.storage
