@@ -1,23 +1,13 @@
-from models.storage import StorageManager, IStorage
+"""The Movie App Module."""
+from models.storage import IStorage
 
 
 class MovieApp:
+    """The Movie App Class."""
+
     def __init__(self, storage: IStorage):
         self._storage = storage
 
-        # menu_controller = MenuController(AppTypes.MOVIE)
-        # menu_controller.start()
-
-
-    def _command_list_movies(self):
-        movies = self._storage.list_movies()
-        pass
-
-    def _command_movie_stats(self):
-        pass
-
-    def _generate_website(self):
-        pass
-
     def run(self):
+        """Method to run the application."""
         self._storage.menu_controller.start()

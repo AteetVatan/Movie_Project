@@ -1,7 +1,11 @@
 """The MovieView Module."""
+from io import StringIO
+
 from helpers import PrintInputHelper as Ph
 from constants import ConstantStrings as Cs
-from constants.data_constants import DataConstants as Jc
+from constants.data_constants import DataConstants as Dc
+from models.html_file_handler_model import HtmlFileHandlerModel
+from config import config
 
 
 class MovieView:
@@ -22,16 +26,16 @@ class MovieView:
         movie_length = len(data)
         Ph.pr_bold(Cs.MOVIE_TOTAL.format(KEY1=movie_length))
         for item in data.values():
-            title = item[Jc.title()]
-            year = item[Jc.year()]
-            rating = float(item[Jc.rating()])
+            title = item[Dc.title()]
+            year = item[Dc.year()]
+            rating = float(item[Dc.rating()])
             Ph.pr_menu(f"\t{title} ({year}): {rating:.2f}")
 
     @staticmethod
     def random_movie(random_movie_data):
         """Prints random Movies."""
-        title = random_movie_data[Jc.title()]
-        rating = float(random_movie_data[Jc.rating()])
+        title = random_movie_data[Dc.title()]
+        rating = float(random_movie_data[Dc.rating()])
         Ph.pr_menu(
             (Cs.MOVIE_CHOSEN.format(KEY1=title,
                                     KEY2=f"{rating:.2f}")))
@@ -64,10 +68,50 @@ class MovieView:
         Ph.pr_menu(Cs.MEDIAN_RATING.format(KEY1=f"{median_rating:.2f}"))
         for item in best_movies:
             Ph.pr_menu(Cs.MOVIE_BEST.format(
-                KEY1=item[Jc.title()], KEY2=item[Jc.rating()]))
+                KEY1=item[Dc.title()], KEY2=item[Dc.rating()]))
         for item in worst_movies:
             Ph.pr_menu(Cs.MOVIE_WORST.format(
-                KEY1=item[Jc.title()], KEY2=item[Jc.rating()]))
+                KEY1=item[Dc.title()], KEY2=item[Dc.rating()]))
+
+    @staticmethod
+    def generate_website(data, html_file_handler: HtmlFileHandlerModel):
+        """Method to generate_website."""
+        template_data = html_file_handler.html_template_data
+        # set website title
+        website_title = config.HTML_WEB_PAGE_TITLE
+        website_title_anchor = config.HTML_TEMPLATE_TITLE_ANCHOR
+        web_page = template_data.replace(website_title_anchor, website_title)
+        # Get The HTML from data
+        website_movie_grid_anchor = config.HTML_TEMPLATE_MOVIE_GRID_ANCHOR
+        web_html = MovieView.__generate_website_html(data)
+        web_page = web_page.replace(website_movie_grid_anchor, web_html)
+        html_file_handler.write_html_data(web_page)
+        Ph.pr_menu(f"Website [{html_file_handler.file_name}] was generated successfully.")
+
+    @staticmethod
+    def __generate_website_html(data):
+        # Assuming that we will have a very large string
+        # So using StringIO
+        string_buffer = StringIO()
+        for item in data.values():
+            title = item[Dc.title()]
+            year = item[Dc.year()]
+            poster = item[Dc.poster()]
+            string_buffer.write(MovieView.__generate_movie_li(title, year, poster))
+
+        return string_buffer.getvalue()
+
+    @staticmethod
+    def __generate_movie_li(title, year, poster):
+        """Method to generate an HTML list with movie title, year, poster."""
+        return f'''
+                <li>
+                    <div class="movie">
+                        <img class="movie-poster" src="{poster}">
+                        <div class="movie-title">{title}</div>
+                        <div class="movie-year">{year}</div>
+                    </div>
+                </li>'''
 
     # endregion READ
 

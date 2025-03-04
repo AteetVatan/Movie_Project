@@ -67,6 +67,11 @@ class BaseController(ABC):
         """Abstract method for data filter."""
         return False
 
+    @abstractmethod
+    def generate_website(self) -> bool:
+        """Abstract method to delete item in data."""
+        return False
+
     # endregion READ
 
     # region UPDATE
@@ -121,6 +126,7 @@ class BaseController(ABC):
             11: {"method": self.data_filter, "desc": f"filter {data_desc}".title()},
             12: {"method": self.show_data_histogram,
                  "desc": f"Show {data_desc}s Histogram".title()},
-            13: {"method": self.save_data, "desc": "Save".title()}
+            13: {"method": self.save_data, "desc": "Save".title()},
+            14: {"method": self.generate_website, "desc": "Generate website"}
         }
     # endregion private-methods

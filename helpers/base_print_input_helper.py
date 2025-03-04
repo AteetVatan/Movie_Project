@@ -19,9 +19,9 @@ class PrintInputHelper:
         print("\033[38;5;37m" + txt + "\033[0m")
 
     @staticmethod
-    def pr_error(txt):
+    def pr_error(txt, error=""):
         """Print error messages in red"""
-        print("\033[91m" + txt + "\033[0m")
+        print("\033[91m" + txt +" "+ error + "\033[0m")
 
     @staticmethod
     def pr_bold(txt):

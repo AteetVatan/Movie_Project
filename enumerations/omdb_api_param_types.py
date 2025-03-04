@@ -1,6 +1,6 @@
 from enum import Enum
 
-import config
+from config import config
 
 
 class OMDBApiParamTypes(Enum):

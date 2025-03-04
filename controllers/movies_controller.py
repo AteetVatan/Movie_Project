@@ -1,7 +1,7 @@
 """Module for Movie data CRUD methods."""
 import os
 
-import config
+from config import config
 from controllers.base_controller import BaseController
 from enumerations import FileTypes
 from validation import MovieValidationManager as Mv
@@ -22,9 +22,9 @@ class MoviesController(BaseController):
         super().__init__(self.__data_desc)
         if file_path:
             self.__file_path = file_path
-            self.__file_name = os.path.basename(file_path)
         self.movie_model = MovieModel(self.__file_path, file_type)
 
+    # region CREATE
     def add_data(self):
         """Adds a new movie to the data."""
         try:
@@ -45,18 +45,11 @@ class MoviesController(BaseController):
             self.movie_model.movie_model_error(e.args[0])
         return MenuOperationOutputModel()
 
-    # Helper function to get and validate user input
-    def get_valid_input(self, prompt, validation_func):
-        while True:
-            user_input = Ph.pr_input(prompt)
-            if not user_input:
-                return None  # Exit if input is empty
-            validation_func(user_input)
-            return user_input
-
     def get_console_user_inputs(self):
+        """Method to get user input from console."""
         # MOVIE_NAME
-        title = self.get_valid_input(Cs.NEW_MOVIE_NAME_ENTER, self.movie_model.add_data_valid_movie)
+        title = MoviesController.__get_valid_input(Cs.NEW_MOVIE_NAME_ENTER,
+                                                   self.movie_model.add_data_valid_movie)
         if title is None:
             return MenuOperationOutputModel(operation_wait=False)
 
@@ -65,15 +58,25 @@ class MoviesController(BaseController):
             return title
 
         # MOVIE_YEAR
-        year = self.get_valid_input(Cs.MOVIE_YEAR_ENTER, MovieModel.valid_movie_year)
+        year = MoviesController.__get_valid_input(Cs.MOVIE_YEAR_ENTER, MovieModel.valid_movie_year)
         if year is None:
             return MenuOperationOutputModel(operation_wait=False)
 
         # MOVIE_RATING
-        rating = self.get_valid_input(Cs.MOVIE_RATING_ENTER, MovieModel.valid_rating)
+        rating = MoviesController.__get_valid_input(Cs.MOVIE_RATING_ENTER, MovieModel.valid_rating)
         if rating is None:
             return MenuOperationOutputModel(operation_wait=False)
         return title, year, rating
+
+    # Helper function to get and validate user input
+    @staticmethod
+    def __get_valid_input(prompt, validation_func):
+        while True:
+            user_input = Ph.pr_input(prompt)
+            if not user_input:
+                return None  # Exit if input is empty
+            validation_func(user_input)
+            return user_input
 
     # endregion CREATE
 
@@ -180,6 +183,14 @@ class MoviesController(BaseController):
         """Method to generate Movie data Histogram."""
         try:
             self.movie_model.show_data_histogram()
+        except ValueError as e:
+            self.movie_model.movie_model_error(e.args[0])
+        return MenuOperationOutputModel()
+
+    def generate_website(self):
+        """Method to generate_website."""
+        try:
+            self.movie_model.generate_website()
         except ValueError as e:
             self.movie_model.movie_model_error(e.args[0])
         return MenuOperationOutputModel()

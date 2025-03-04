@@ -1,13 +1,13 @@
 """ Module for API Request Model."""
-import config
-from app.load_enviorments import LoadEnvironment
+from config import config
+from env.load_enviorments import LoadEnvironment
 from enumerations import OMDBApiParamTypes
 
 
 class ApiRequestModel:
     """ Class for API Request Model."""
     __api_base_url = __key_name = __key_value = ""
-    __query_endpoint = __query_param_key = ""
+    __query_endpoint = ""
 
     def __init__(self):
         env = LoadEnvironment()
@@ -21,11 +21,6 @@ class ApiRequestModel:
     def endpoint_url(self):
         """ Method to get endpoint_url."""
         return f"{self.__api_base_url}{self.__query_endpoint}"
-
-
-    def get_param_dict(self, **kwargs):
-        """ Method to get the HTTP get request query parameter dictionary."""
-        return {self.__query_param_key: self.__query_param_value}
 
     @property
     def header_dict(self):
@@ -47,7 +42,6 @@ class ApiRequestModel:
         """ Method to API Key Value Name in config file."""
         return self.__key_value
 
-
     def get_query_string(self, param_type: OMDBApiParamTypes, param_value):
         """ Method to get the Http request Query end point."""
         return f"?{self.__key_name}={self.__key_value}&{param_type.value}={param_value}"
@@ -61,6 +55,3 @@ class ApiRequestModel:
     def query_param_title_key(self):
         """ Method to get query_param_key."""
         return self.__query_param_title_key
-
-
-

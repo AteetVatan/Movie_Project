@@ -4,9 +4,10 @@ from random import randint
 
 from matplotlib import pyplot as plt
 
-import config
+from config import config
 from constants.odmb_constants import OmdbConstants
 from enumerations import FileTypes, OMDBApiParamTypes
+from models.html_file_handler_model import HtmlFileHandlerModel
 from models.managers import DataManager
 from models.base_model import BaseModel
 from views import MovieView
@@ -21,6 +22,7 @@ class MovieModel(BaseModel):
     def __init__(self, file_path, file_type=FileTypes.JSON):
         self.data = None
         super().__init__(file_path, file_type)
+        self.__html_file_handler = HtmlFileHandlerModel()
 
     # region CREATE
     def add_data(self, title, id=None, year=None, rating=None):
@@ -169,6 +171,13 @@ class MovieModel(BaseModel):
             # Two lines to make our compiler able to draw:
             plt.savefig(sys.stdout.buffer)
             sys.stdout.flush()
+        except ValueError as e:
+            raise e
+
+    def generate_website(self):
+        """Method to generate_website."""
+        try:
+            MovieView.generate_website(self.data, self.__html_file_handler)
         except ValueError as e:
             raise e
 

@@ -1,7 +1,7 @@
 """The main Module."""
 import os
 from movie_app import MovieApp
-from models.storage import StorageJson, StorageManager
+from models.storage import StorageManager
 
 
 def main():

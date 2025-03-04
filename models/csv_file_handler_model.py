@@ -3,7 +3,7 @@ import csv
 import os
 from models import FileHandlerModel
 from helpers import PrintInputHelper as Ph
-from constants import ConstantStrings as Cs, DataConstants
+from constants import DataConstants
 
 
 class CsvFileHandlerModel(FileHandlerModel):
@@ -13,7 +13,7 @@ class CsvFileHandlerModel(FileHandlerModel):
         # Set CSV Metadata
         (self.__csv_all_columns,
          self.__csv_attr_columns,
-         self.csv_key_column) = self.__get_csv_metadata()
+         self.csv_key_column) = CsvFileHandlerModel.__get_csv_metadata()
 
         if not os.path.exists(file_path):  # Check if a file exists
             self.write_data(data=None, file_path=file_path)
@@ -61,7 +61,8 @@ class CsvFileHandlerModel(FileHandlerModel):
                 reader = csv.DictReader(f)
                 for row in reader:
                     if self.csv_attribute_columns:
-                        row_dict = {col: row[col] for col in self.csv_attribute_columns if col in row}
+                        row_dict = {col: row[col]
+                                    for col in self.csv_attribute_columns if col in row}
                     else:
                         row_dict = row
 
@@ -84,7 +85,7 @@ class CsvFileHandlerModel(FileHandlerModel):
             if data is None:
                 data = {}
 
-            with open(file_path, "w", newline="") as file:
+            with open(file_path, "w", encoding="utf-8", newline="") as file:
                 writer = csv.writer(file)
                 # Header Row
                 writer.writerow(self.csv_all_columns)
@@ -106,31 +107,30 @@ class CsvFileHandlerModel(FileHandlerModel):
         except IOError as e:
             Ph.pr_error("I/O error occurred: ", os.strerror(e.errno))
 
-    def __get_csv_metadata(self, file_path: str = None):
+    @staticmethod
+    def __get_csv_metadata():
         """Method to read file data."""
         all_csv_headers = (DataConstants.id(),
-                                DataConstants.title(),
-                                DataConstants.year(),
-                                DataConstants.rating(),
-                                DataConstants.poster())
+                           DataConstants.title(),
+                           DataConstants.year(),
+                           DataConstants.rating(),
+                           DataConstants.poster())
         csv_key_column = all_csv_headers[0]
         csv_attr_columns = all_csv_headers[1:]
         return all_csv_headers, csv_attr_columns, csv_key_column
 
-        if not file_path:
-            file_path = self.file_path
-        try:
-            with open(file_path, mode="r", encoding="utf-8") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    all_csv_headers = tuple(row.keys())
-                    csv_key_column = all_csv_headers[0]
-                    csv_attr_columns = all_csv_headers[1:]
-                    break
-        except ValueError as e:
-            Ph.pr_error(e.args[0])
-        except FileNotFoundError as f:
-            Ph.pr_error(f)
-        except IOError as e:
-            Ph.pr_error("I/O error occurred: ", os.strerror(e.errno))
-        return all_csv_headers, csv_attr_columns, csv_key_column
+        # try:
+        #     with open(self.file_path, mode="r", encoding="utf-8") as f:
+        #         reader = csv.DictReader(f)
+        #         for row in reader:
+        #             all_csv_headers = tuple(row.keys())
+        #             csv_key_column = all_csv_headers[0]
+        #             csv_attr_columns = all_csv_headers[1:]
+        #             break
+        # except ValueError as e:
+        #     Ph.pr_error(e.args[0])
+        # except FileNotFoundError as f:
+        #     Ph.pr_error(f)
+        # except IOError as e:
+        #     Ph.pr_error("I/O error occurred: ", os.strerror(e.errno))
+        # return all_csv_headers, csv_attr_columns, csv_key_column

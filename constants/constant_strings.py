@@ -50,5 +50,5 @@ class ConstantStrings:
     GENERAL_EMPTY_ERROR = '{KEY} cannot be empty.'
     GENERAL_MENU_CMD = '[Enter empty text for Menu.]'
 
-    #File error
+    # File error
     FILE_NOT_EXIST = 'File does not exist on Path {KEY}'

@@ -21,11 +21,11 @@ class FileHandlerModel(ABC):
         return self.__file_path
 
     @abstractmethod
-    def read_data(self, file_path: str = None):
+    def read_data(self, file_path: str = None) -> bool:
         """Method to read file data."""
-        pass
+        return True
 
     @abstractmethod
-    def write_data(self, data, file_path: str = None):
+    def write_data(self, data, file_path: str = None) -> bool:
         """Method to write data to file"""
-        pass
+        return True

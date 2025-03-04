@@ -7,16 +7,20 @@ class IStorage(ABC):
 
     @abstractmethod
     def list_movies(self):
-        pass
+        """abstractmethod to list_movies"""
+        return
 
     @abstractmethod
     def add_movie(self, title, year, rating, poster):
-        pass
+        """abstractmethod to add_movie"""
+        return
 
     @abstractmethod
     def delete_movie(self, title):
-        pass
+        """abstractmethod to delete_movie"""
+        return
 
     @abstractmethod
     def update_movie(self, title, rating):
-        pass
+        """abstractmethod to update_movie"""
+        return

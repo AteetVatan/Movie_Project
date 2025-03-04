@@ -2,7 +2,7 @@
 import os
 from abc import ABC, abstractmethod
 
-import config
+from config import config
 from enumerations import FileTypes
 from helpers.api_helper import ApiHelper
 from models.api_request_model import ApiRequestModel
@@ -15,10 +15,10 @@ class BaseModel(ABC):
     __api_request_model: ApiRequestModel = None
 
     def __init__(self, file_path, file_type = FileTypes.JSON):
-        self.__file_name = os.path.basename(file_path)
         self.__file_handler = FileManager.get_file_handler(file_path, file_type)
         if config.USE_DATA_FROM_API:
-            self.__api_request_model = self.__api_request_model if self.__api_request_model else ApiRequestModel()
+            if not self.__api_request_model:
+                self.__api_request_model = ApiRequestModel()
             self.__api_handler = ApiHelper(self.__api_request_model)
         self.__data = self.file_handler.read_data()
 
