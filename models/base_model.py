@@ -1,5 +1,4 @@
 """The Base Model Module."""
-import os
 from abc import ABC, abstractmethod
 
 from config import config
@@ -44,7 +43,7 @@ class BaseModel(ABC):
 
     # region CREATE
     @abstractmethod
-    def add_data(self, *args):
+    def add_data(self, **kwargs):
         """Adds data."""
         return
 
@@ -73,7 +72,7 @@ class BaseModel(ABC):
 
     # region DELETE
     @abstractmethod
-    def delete_data(self):
+    def delete_data(self, title):
         """Method to delete the existing movie."""
         return
     # endregion DELETE

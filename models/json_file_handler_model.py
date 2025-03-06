@@ -17,7 +17,8 @@ class JsonFileHandlerModel(FileHandlerModel):
         #     DataConstants.title(): "",
         #     DataConstants.year(): 0,
         #     DataConstants.rating(): 0,
-        #     DataConstants.poster(): ""
+        #     DataConstants.poster(): "",
+        #     DataConstants.notes(): "" #optional
         # }}
         super().__init__(file_path)
 

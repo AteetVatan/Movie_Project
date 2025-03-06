@@ -15,10 +15,10 @@ class MovieValidationManager:
             try:
                 rating = float(rating)
             except ValueError:
-                raise ValueError(Cs.MOVIE_RATING_ERROR)
+                raise ValueError(Cs.MOVIE_RATING_ERROR) # pylint: disable=raise-missing-from
             if not 1 <= rating <= 10:
                 raise ValueError(Cs.MOVIE_RATING_MSG)
-        except ValueError:
+        except ValueError:  # pylint: disable=raise-missing-from
             raise
 
     @staticmethod
@@ -31,10 +31,10 @@ class MovieValidationManager:
             try:
                 year = int(year)
             except ValueError:
-                raise ValueError(Cs.MOVIE_YEAR_PROMPT_ERROR.format(KEY=current_year))
+                raise ValueError(Cs.MOVIE_YEAR_PROMPT_ERROR.format(KEY=current_year)) # pylint: disable=raise-missing-from
             if not 1900 <= year <= current_year:
                 raise ValueError(Cs.MOVIE_YEAR_PROMPT_ERROR.format(KEY=current_year))
-        except ValueError:
+        except ValueError:  # pylint: disable=raise-missing-from
             raise
 
     @staticmethod
@@ -46,6 +46,6 @@ class MovieValidationManager:
             try:
                 str(movie_name)
             except ValueError:
-                raise ValueError(Cs.MOVIE_NAME_ERROR)
-        except ValueError:
+                raise ValueError(Cs.MOVIE_NAME_ERROR) # pylint: disable=raise-missing-from
+        except ValueError:  # pylint: disable=raise-missing-from
             raise

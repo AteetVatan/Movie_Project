@@ -1,27 +1,30 @@
+"""The StorageJson Module."""
+from models.storage.istorage import IStorage
 from controllers import MoviesController, MenuController
 from enumerations import FileTypes
-from models.storage import IStorage
 
 
 # Implement CSV Storage
 class StorageCsv(IStorage):
+    """The StorageCSV Class."""
+
     def __init__(self, file_path):
         self.file_path = file_path
-        self.__data_controller = MoviesController(file_path=file_path, file_type=FileTypes.CSV)
-        self.__menu_controller = MenuController(self.__data_controller)
-
-    @property
-    def menu_controller(self):
-        return self.__menu_controller
+        self.data_controller = MoviesController(file_path=file_path, file_type=FileTypes.CSV)
+        self.menu_controller = MenuController(self.data_controller)
 
     def list_movies(self):
-        self.__data_controller.list_data()
+        """Method to list data."""
+        self.data_controller.list_data()
 
     def add_movie(self):
-        self.__data_controller.add_data()
+        """Method to add data."""
+        self.data_controller.add_data()
 
-    def delete_movie(self, title):
-        self.__data_controller.delete_data(title=title)
+    def delete_movie(self):
+        """Method to delete data."""
+        self.data_controller.delete_data()
 
-    def update_movie(self, title, rating):
-        self.__data_controller.update_data(title=title, rating=rating)
+    def update_movie(self):
+        """Method to update data Notes."""
+        self.data_controller.update_data()

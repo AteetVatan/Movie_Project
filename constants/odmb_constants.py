@@ -9,7 +9,9 @@ class OmdbConstants:
     __rating = "imdbRating"
     __year = "Year"
     __poster = "Poster"
+    __country = "Country"
     __response = "Response"
+
     __omdb_data_mapping = {__id: DataConstants.id(),
                            __title: DataConstants.title(),
                            __rating: DataConstants.rating(),
@@ -43,8 +45,13 @@ class OmdbConstants:
 
     @classmethod
     def poster(cls):
-        """Method to get the Release Year Key."""
+        """Method to get the Poster Key."""
         return cls.__poster
+
+    @classmethod
+    def country(cls):
+        """Method to get the Country Key."""
+        return cls.__country
 
     @classmethod
     def response(cls):
@@ -53,4 +60,5 @@ class OmdbConstants:
 
     @classmethod
     def item_found(cls, response):
+        """Method to check the response variable is True."""
         return response.get(cls.__response, "").lower() == 'true'

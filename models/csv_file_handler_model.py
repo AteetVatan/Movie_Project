@@ -94,9 +94,7 @@ class CsvFileHandlerModel(FileHandlerModel):
                     row_list = [id_key]
                     # Add other column values
                     for column in self.csv_attribute_columns:
-                        val = row_data.get(column)
-                        if not val:
-                            raise ValueError(f"Missing  {column}  in row: {row_data}")
+                        val = row_data.get(column, "")
                         row_list.append(val)
 
                     writer.writerow(row_list)
@@ -114,7 +112,9 @@ class CsvFileHandlerModel(FileHandlerModel):
                            DataConstants.title(),
                            DataConstants.year(),
                            DataConstants.rating(),
-                           DataConstants.poster())
+                           DataConstants.poster(),
+                           DataConstants.country(),
+                           DataConstants.notes())
         csv_key_column = all_csv_headers[0]
         csv_attr_columns = all_csv_headers[1:]
         return all_csv_headers, csv_attr_columns, csv_key_column

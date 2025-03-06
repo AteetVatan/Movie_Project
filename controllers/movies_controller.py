@@ -7,7 +7,7 @@ from enumerations import FileTypes
 from validation import MovieValidationManager as Mv
 from helpers import PrintInputHelper
 from helpers.base_print_input_helper import PrintInputHelper as Ph
-from constants import DataConstants as Jc, ConstantStrings as Cs
+from constants import DataConstants as Dc, ConstantStrings as Cs
 from models import MovieModel
 from models import MenuOperationOutputModel
 
@@ -15,8 +15,8 @@ from models import MenuOperationOutputModel
 class MoviesController(BaseController):
     """The Movie operations main class"""
     __data_desc = "movie"
-    __file_name = "../data/movie.json"
-    __file_path = os.path.join(os.getcwd(), "data", __file_name)
+    __file_name = "../data/data.json"
+    __file_path = os.path.join(os.getcwd(), config.DATA_DIRECTORY, __file_name)
 
     def __init__(self, file_path="", file_type=FileTypes.JSON):
         super().__init__(self.__data_desc)
@@ -27,56 +27,22 @@ class MoviesController(BaseController):
     # region CREATE
     def add_data(self):
         """Adds a new movie to the data."""
-        try:
-            title = year = rating = None
-            # Get user Inputs
-            result = self.get_console_user_inputs()
-            if isinstance(result, MenuOperationOutputModel):
-                return result
-
-            # While using OMDB API, only Title search is enabled.
-            if config.USE_DATA_FROM_API:
-                title = result
-            else:
-                title, year, rating = result
-                # Add the movie data
-            self.movie_model.add_data(title=title, year=year, rating=rating)
-        except ValueError as e:
-            self.movie_model.movie_model_error(e.args[0])
-        return MenuOperationOutputModel()
-
-    def get_console_user_inputs(self):
-        """Method to get user input from console."""
-        # MOVIE_NAME
-        title = MoviesController.__get_valid_input(Cs.NEW_MOVIE_NAME_ENTER,
-                                                   self.movie_model.add_data_valid_movie)
-        if title is None:
-            return MenuOperationOutputModel(operation_wait=False)
-
-        # While using OMDB API, only Title search is enabled.
-        if config.USE_DATA_FROM_API:
-            return title
-
-        # MOVIE_YEAR
-        year = MoviesController.__get_valid_input(Cs.MOVIE_YEAR_ENTER, MovieModel.valid_movie_year)
-        if year is None:
-            return MenuOperationOutputModel(operation_wait=False)
-
-        # MOVIE_RATING
-        rating = MoviesController.__get_valid_input(Cs.MOVIE_RATING_ENTER, MovieModel.valid_rating)
-        if rating is None:
-            return MenuOperationOutputModel(operation_wait=False)
-        return title, year, rating
-
-    # Helper function to get and validate user input
-    @staticmethod
-    def __get_valid_input(prompt, validation_func):
         while True:
-            user_input = Ph.pr_input(prompt)
-            if not user_input:
-                return None  # Exit if input is empty
-            validation_func(user_input)
-            return user_input
+            try:
+                input_dict = {
+                    Dc.title(): {"prompt": Cs.NEW_MOVIE_NAME_ENTER,
+                                 "validation": self.movie_model.add_data_valid_movie}}
+
+                # Get user Inputs
+                result = self.__get_console_user_inputs(input_dict)
+                if isinstance(result, MenuOperationOutputModel):
+                    return result
+                title, = result
+                self.movie_model.add_data(title=title)
+                break
+            except ValueError as e:
+                self.movie_model.movie_model_error(e.args[0])
+        return MenuOperationOutputModel()
 
     # endregion CREATE
 
@@ -112,7 +78,7 @@ class MoviesController(BaseController):
         """
         while True:
             try:
-                if key == Jc.year():
+                if key == Dc.year():
                     usr_input = Ph.pr_input(Cs.MOVIE_SORT_YEAR_PROMPT).lower()
                     if usr_input == "":
                         return MenuOperationOutputModel(operation_wait=False)
@@ -198,14 +164,21 @@ class MoviesController(BaseController):
     # endregion READ
 
     # region UPDATE
-    def update_data(self, **kwargs):
+    def update_data(self):
         """Method to Update existing Movie."""
         try:
-            title, rating = kwargs.get(Jc.title()), kwargs.get(Jc.rating())
-            # validation
-            self.movie_model.update_data_valid_movie(title)
-            MovieModel.valid_rating(rating)
-            self.movie_model.update_data(title=title, rating=rating)
+
+            input_dict = {
+                Dc.title(): {"prompt": Cs.MOVIE_NAME_UPDATE,
+                             "validation": self.movie_model.update_data_valid_movie_name},
+                Dc.notes(): {"prompt": Cs.MOVIE_NAME_UPDATE_NOTES, "validation": lambda x: True}}
+
+            # Get user Inputs
+            result = self.__get_console_user_inputs(input_dict)
+            if isinstance(result, MenuOperationOutputModel):
+                return result
+            title, notes = result
+            self.movie_model.update_data(title=title, notes=notes)
         except ValueError as e:
             self.movie_model.movie_model_error(e.args[0])
 
@@ -222,17 +195,21 @@ class MoviesController(BaseController):
     # endregion UPDATE
 
     # region DELETE
-    def delete_data(self, title=""):
+    def delete_data(self):
         """Method to delete the existing movie."""
         while True:
             try:
-                if not title:
-                    raise ValueError("Movie name cannot be empty.")
+                input_dict = {
+                    Dc.title(): {"prompt": Cs.MOVIE_DELETE,
+                                 "validation": self.movie_model.delete_data_valid}}
+                result = self.__get_console_user_inputs(input_dict)
+                if isinstance(result, MenuOperationOutputModel):
+                    return result
+                title, = result
                 self.movie_model.delete_data(title)
                 break
             except ValueError as e:
                 self.movie_model.movie_model_error(e.args[0])
-
         return MenuOperationOutputModel()
 
     # endregion DELETE
@@ -245,3 +222,36 @@ class MoviesController(BaseController):
         return MenuOperationOutputModel(operation_exit=True)
 
     # endregion EXIT
+
+    # region Helper methods
+    def __get_console_user_inputs(self, input_dict: dict):
+        """Method to get user input from console."""
+        # input_dict = {
+        #     Dc.title(): {"prompt": Cs.NEW_MOVIE_NAME_ENTER,
+        #                  "validation": self.movie_model.add_data_valid_movie},
+        #     Dc.title(): {"prompt": Cs.NEW_MOVIE_NAME_ENTER,
+        #                  "validation": self.movie_model.add_data_valid_movie},
+        #     Dc.title(): {"prompt": Cs.NEW_MOVIE_NAME_ENTER,
+        #                  "validation": self.movie_model.add_data_valid_movie}}
+
+        result_list = []
+        for user_input in input_dict.values():
+            val = self.__get_valid_input(user_input["prompt"], user_input["validation"])
+            if val is None:
+                return MenuOperationOutputModel(operation_wait=False)
+            result_list.append(val)
+
+        return tuple(result_list)
+
+    def __get_valid_input(self, prompt, validation_func):
+        """Helper method to get and validate user input"""
+        while True:
+            try:
+                user_input = Ph.pr_input(prompt)
+                if not user_input:
+                    return None  # Exit if input is empty
+                validation_func(user_input)
+                return user_input
+            except ValueError as e:
+                self.movie_model.movie_model_error(e.args[0])
+    # endregion Helper methods

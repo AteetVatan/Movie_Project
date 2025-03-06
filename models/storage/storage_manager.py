@@ -2,7 +2,9 @@
 import sys
 
 from enumerations import FileTypes
-from models.storage import StorageJson, StorageCsv, IStorage
+from models.storage.istorage import IStorage
+from models.storage.storage_json import StorageJson
+from models.storage.storage_csv import StorageCsv
 from helpers import PrintInputHelper as Ph, FileHelpers
 
 
@@ -11,7 +13,7 @@ class StorageManager:
 
     def __init__(self, file_path):
         self.__storage = None
-        file_type = FileHelpers.check_file_type(file_path)
+        file_type = FileHelpers.get_file_type_from_file_types_enum(file_path)
         self.__storage_factory(file_path, file_type)
 
     @property

@@ -5,6 +5,11 @@ class ConstantStrings:
     """Class to define String Constants."""
     # Menu Constants
     MAIN_PRINT_WELCOME = '---------- Movies App ----------\n'
+    MAIN_PRINT_INTRODUCTION = """ The default file is data.json.
+    In Console user can enter: 
+    python main.py ----------> will create or use existing (default) data.json
+    python main.py xyz ------> will create or use existing xyz.json
+    python main.py abc.csv --> will create or use existing abc.csv"""
     MAIN_PRINT_ENTER_CHOICE = 'Enter choice (1-{key1}): '
     MAIN_PRINT_CONTINUE = 'Press enter for Menu.....'
     MAIN_PRINT_INVALID = 'Invalid Choice'
@@ -13,6 +18,7 @@ class ConstantStrings:
     # Movie Constants
     NEW_MOVIE_NAME_ENTER = 'Enter new movie name [or empty text for Menu.]\n: '
     MOVIE_NAME_UPDATE = 'Enter movie name to be updated [or empty text for Menu.]\n: '
+    MOVIE_NAME_UPDATE_NOTES = 'Enter movie notes [or empty text for Menu.]\n: '
     MOVIE_NAME_PART = 'Enter part of movie name [or empty text for Menu.]\n: '
     MOVIE_NAME_ERROR = 'Enter a valid movie name.'
     MOVIE_EXIST = 'Movie already exists.'
@@ -49,6 +55,7 @@ class ConstantStrings:
     GENERAL_ERROR = 'An unexpected error occurred: {error}'
     GENERAL_EMPTY_ERROR = '{KEY} cannot be empty.'
     GENERAL_MENU_CMD = '[Enter empty text for Menu.]'
+    NOT_AVAILABLE = 'N/A'
 
     # File error
     FILE_NOT_EXIST = 'File does not exist on Path {KEY}'

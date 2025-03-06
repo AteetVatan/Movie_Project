@@ -25,7 +25,6 @@ class MenuController:
     def initialize_user_menu(controller_obj) -> None:
         """Function to initialize the User Menu"""
         menu_length = controller_obj.get_menu_items_length
-        bp.pr_menu(ConstantStrings.MAIN_PRINT_WELCOME)
         while True:
             try:
                 MenuController.display_menu(controller_obj)

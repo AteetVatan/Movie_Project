@@ -11,16 +11,16 @@ class IStorage(ABC):
         return
 
     @abstractmethod
-    def add_movie(self, title, year, rating, poster):
+    def add_movie(self):
         """abstractmethod to add_movie"""
         return
 
     @abstractmethod
-    def delete_movie(self, title):
+    def delete_movie(self):
         """abstractmethod to delete_movie"""
         return
 
     @abstractmethod
-    def update_movie(self, title, rating):
+    def update_movie(self):
         """abstractmethod to update_movie"""
         return

@@ -1,5 +1,6 @@
 """The MovieView Module."""
 from io import StringIO
+import pycountry
 
 from helpers import PrintInputHelper as Ph
 from constants import ConstantStrings as Cs
@@ -26,10 +27,11 @@ class MovieView:
         movie_length = len(data)
         Ph.pr_bold(Cs.MOVIE_TOTAL.format(KEY1=movie_length))
         for item in data.values():
-            title = item[Dc.title()]
-            year = item[Dc.year()]
-            rating = float(item[Dc.rating()])
-            Ph.pr_menu(f"\t{title} ({year}): {rating:.2f}")
+            title = item.get(Dc.title(), Cs.NOT_AVAILABLE)
+            year = item.get(Dc.year(), Cs.NOT_AVAILABLE)
+            rating = item.get(Dc.rating(), Cs.NOT_AVAILABLE)
+            rating = rating if rating == Cs.NOT_AVAILABLE else f"{float(rating):.2f}"
+            Ph.pr_menu(f"\t{title} ({year}): {rating}")
 
     @staticmethod
     def random_movie(random_movie_data):
@@ -44,7 +46,7 @@ class MovieView:
     def display_search_data(search_result: list):
         """Prints searched Result."""
         for item in search_result:
-            Ph.pr_menu(f"{item[0].title()}, {item[1]}")
+            Ph.pr_menu(f"\t{item[0].title()}, {item[1]}")
 
     @staticmethod
     def display_sorted_data(sorted_list: list):
@@ -93,27 +95,74 @@ class MovieView:
         # Assuming that we will have a very large string
         # So using StringIO
         string_buffer = StringIO()
-        for item in data.values():
-            title = item[Dc.title()]
-            year = item[Dc.year()]
-            poster = item[Dc.poster()]
-            string_buffer.write(MovieView.__generate_movie_li(title, year, poster))
+        for k, v in data.items():
+            title = v.get(Dc.title(), "")
+            year = v.get(Dc.year(), "")
+            poster = v.get(Dc.poster(), "")
+            notes = v.get(Dc.notes(), "")
+            rating = v.get(Dc.rating(), 0)
+            imdb_page = config.OMDB_API_IMDB_PAGE.format(KEY=k)
+            country = v.get(Dc.country(), "").split(",")[0].strip()
+            string_buffer.write(MovieView.__generate_movie_li(title=title,
+                                                              year=year,
+                                                              poster=poster,
+                                                              notes=notes,
+                                                              rating=rating,
+                                                              imdb_page=imdb_page,
+                                                              country=country))
 
         return string_buffer.getvalue()
 
     @staticmethod
-    def __generate_movie_li(title, year, poster):
+    def __generate_movie_li(**kwargs):
         """Method to generate an HTML list with movie title, year, poster."""
+        title = kwargs.get(Dc.title(), "")
+        year = kwargs.get(Dc.year(), Cs.NOT_AVAILABLE)
+        poster = kwargs.get(Dc.poster(), "")
+        notes = kwargs.get(Dc.notes(), "")
+        rating = kwargs.get(Dc.rating(), Cs.NOT_AVAILABLE)
+        imdb_page = kwargs.get("imdb_page", "")
+        country = kwargs.get(Dc.country(), Cs.NOT_AVAILABLE)
+
+        rating_stars = MovieView.__generate_movie_rating_stars(rating)
+        flag = MovieView.__get_flag(country)
         return f'''
                 <li>
                     <div class="movie">
-                        <img class="movie-poster" src="{poster}">
-                        <div class="movie-title">{title}</div>
+                        <a href="{imdb_page}" target="_blank">
+                            <img class="movie-poster" src="{poster}" title="{notes}">
+                        </a>                        
+                        <div class="movie-title">
+                            {title}
+                        </div>
+                        <div class="movie-title">
+                            <img src="{flag}" title="{country}" class="flag-icon">
+                        </div>
                         <div class="movie-year">{year}</div>
+                        <div class="movie-rating" title="{rating}">{rating_stars}</div>
                     </div>
                 </li>'''
 
-    # endregion READ
+    @staticmethod
+    def __generate_movie_rating_stars(rating):
+        """Method to generate stars for rating."""
+        try:
+            rating = float(rating)
+        except ValueError:
+            rating = 0
+
+        stars = round((rating / 10) * 5)
+        return "★" * stars + "☆" * (5 - stars)
+
+    @staticmethod
+    def __get_flag(country_name):
+        """Method gets the flag for the given country name."""
+        country = pycountry.countries.get(name=country_name)  # get country ISO code
+        if country:
+            return f"flags/{country.alpha_2.lower()}.png"
+        return ""
+
+        # endregion READ
 
     # region UPDATE
     @staticmethod
@@ -130,12 +179,9 @@ class MovieView:
 
     # region DELETE
     @staticmethod
-    def movie_delete_operation(movie_name: str, success: bool):
+    def movie_delete_complete(title: str):
         """View method to show delete operation method output."""
-        if success:
-            Ph.pr_menu(Cs.MOVIE_DELETE_DONE.format(KEY1=movie_name))
-        else:
-            Ph.pr_error(Cs.MOVIE_NOT_EXIST.format(KEY1=movie_name))
+        Ph.pr_menu(Cs.MOVIE_DELETE_DONE.format(KEY1=title))
 
     # endregion DELETE
 
