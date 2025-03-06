@@ -13,6 +13,40 @@ The architecture is designed using a modular approach with separate controllers,
 - Analytics: Top-rated data, least-rated data etc.
 - Persistent Storage: JSON & CSV files.
 
+## Installation
+### 1. Clone the Repository
+```sh
+git clone <repo-url>
+cd Movie_Project
+```
+### 2. Set Up Virtual Environment (Optional but Recommended)
+```sh
+python -m venv .venv
+source .venv/bin/activate  # Mac/Linux
+.venv\Scripts\activate  # Windows
+```
+### 3. Install Dependencies (If requirements.txt exists)
+```sh
+pip install -r requirements.txt
+```
+
+## Usage
+To start the program, run:
+Create or use existing (default) data.json
+```sh
+python main.py
+```
+Create or use existing xyz.json
+```sh
+python main.py xyz
+```
+Create or use existing abc.csv
+```sh
+python main.py abc.csv
+```
+
+Follow the on-screen menu to interact with the data collection.
+
 ## Project Structure
 ```
 ## Project Structure
@@ -79,36 +113,6 @@ Movie_Project/
 ├── README.md
 └── requirements.txt
 ```
-
-## Installation
-### 1. Clone the Repository
-```sh
-git clone <repo-url>
-cd Movie_Project
-```
-### 2. Set Up Virtual Environment (Optional but Recommended)
-```sh
-python -m venv .venv
-source .venv/bin/activate  # Mac/Linux
-.venv\Scripts\activate  # Windows
-```
-### 3. Install Dependencies (If requirements.txt exists)
-```sh
-pip install -r requirements.txt
-```
-
-## Usage
-To start the program, run:
-```sh
-python main.py
-```
-Follow the on-screen menu to interact with the movie collection.
-
-## Future Improvements
-* Implement a database for persistent movie storage.
-* Add exception handling and logging for better error tracking. 
-* Extend support for additional app types (e.g., TV Shows, Documentaries).
-
 ## Contributing
 Feel free to submit **pull requests** or open **issues** for improvements.
 
