@@ -10,6 +10,9 @@ OMDB_API_QUERY_TITLE_PARAM_NAME = "t"
 OMDB_API_QUERY_ID_PARAM_NAME = "i"
 OMDB_API_QUERY_TYPE_PARAM_NAME = "type"  # movie, series, episode
 OMDB_API_QUERY_SEARCH_PARAM_NAME = "s"
+OMDB_API_IMDB_PAGE ="http://www.imdb.com/title/{KEY}"
+
+
 
 # HTML CONFIGURATIONS
 HTML_DIRECTORY = "_static"
@@ -18,3 +21,9 @@ HTML_FILE = "index.html"
 HTML_WEB_PAGE_TITLE = "Movie Application"
 HTML_TEMPLATE_TITLE_ANCHOR = "__TEMPLATE_TITLE__"
 HTML_TEMPLATE_MOVIE_GRID_ANCHOR = "__TEMPLATE_MOVIE_GRID__"
+
+# DATA CONFIGURATIONS
+DATA_DIRECTORY = "data"
+
+# flag CDN
+FLAG_CDN ="https://www.countryflags.io/{KEY}/flat/64.png"

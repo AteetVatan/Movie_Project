@@ -11,43 +11,73 @@ The architecture is designed using a modular approach with separate controllers,
 - CRUD: Create, Read, Update, Delete.
 - Project is based on MVC Pattern.
 - Analytics: Top-rated data, least-rated data etc.
-- Persistent Storage: Now only JSON file—More to come.
+- Persistent Storage: JSON & CSV files.
 
 ## Project Structure
 ```
+## Project Structure
+
+```bash
 Movie_Project/
-│── controllers/
-│   │── base_controller.py
-│   │── menu_controller.py
-│   │── movies_controller.py
+├── _static/
+│   ├── flags/
+│   ├── index.html
+│   ├── index_template.html
+│   └── style.css
+├── config/
+│   └── config.py
+├── constants/
+│   ├── constant_strings.py
+│   ├── data_constants.py
+│   └── omdb_constants.py
+├── controllers/
+│   ├── base_controller.py
+│   ├── menu_controller.py
+│   ├── movies_controller.py
 │   └── managers/
-│       │── menu_manager.py
-│── enumerations/
-│   │── app_types.py
-│── helpers/
-│   │── base_print_input_helper.py
-│   │── data_helpers.py
-│── models/
-│   │── base_model.py
-│   │── file_handler_model.py
-│   │── menu_operation_output_model.py
-│   │── movie_model.py
-│   └── managers/
-│       │── data_manager.py
-│── views/
-│   │── movie_view.py
-│── validation/
-│   │── movie_validation_manager.py
-│── data/
-│   │── movie.json
-│   │── movie_backup.json
-│── constants/
-│   │── constant_strings.py
-│   │── json_constants.py
-│── movies.py
-│── requirements.txt
-│── .gitignore
-│── README.md
+│       └── menu_manager.py
+├── data/
+│   ├── data.csv
+│   └── data.json
+├── enumerations/
+│   ├── __init__.py
+│   ├── app_types.py
+│   ├── file_types.py
+│   └── omdb_api_param_types.py
+├── env/
+│   ├── .env
+│   └── load_envoirments.py
+├── helpers/
+│   ├── api_helper.py
+│   ├── base_print_input_helper.py
+│   ├── data_helpers.py
+│   └── file_helpers.py
+├── models/
+│   ├── api_request_model.py
+│   ├── base_model.py
+│   ├── csv_file_handler_model.py
+│   ├── file_handler_model.py
+│   ├── html_file_handler_model.py
+│   ├── json_file_handler_model.py
+│   ├── menu_operation_output_model.py
+│   ├── movie_model.py
+│   ├── managers/
+│   │   ├── data_manager.py
+│   │   └── file_manager.py
+│   └── storage/
+│       ├── istorage.py
+│       ├── storage_csv.py
+│       ├── storage_json.py
+│       └── storage_manager.py
+├── validation/
+│   └── movie_validation_manager.py
+├── views/
+│   └── movie_view.py
+├── .gitignore
+├── main.py
+├── movie_app.py
+├── README.md
+└── requirements.txt
 ```
 
 ## Installation

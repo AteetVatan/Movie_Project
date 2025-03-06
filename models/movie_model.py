@@ -1,19 +1,16 @@
 """The MovieModel Module."""
+import random
 import sys
-from random import randint
-
 from matplotlib import pyplot as plt
-
-from config import config
-from constants.odmb_constants import OmdbConstants
-from enumerations import FileTypes, OMDBApiParamTypes
 from models.html_file_handler_model import HtmlFileHandlerModel
 from models.managers import DataManager
 from models.base_model import BaseModel
 from views import MovieView
-from constants import DataConstants as Jc, ConstantStrings as Cs
 from validation import MovieValidationManager as Mv
 from helpers import DataHelpers
+from enumerations import FileTypes, OMDBApiParamTypes
+from constants.odmb_constants import OmdbConstants
+from constants import DataConstants as Dc, ConstantStrings as Cs
 
 
 class MovieModel(BaseModel):
@@ -25,34 +22,43 @@ class MovieModel(BaseModel):
         self.__html_file_handler = HtmlFileHandlerModel()
 
     # region CREATE
-    def add_data(self, title, id=None, year=None, rating=None):
+    def add_data(self, **kwargs):
         """Adds a new movie to the data."""
         try:
-            id_column = ""
-            if config.USE_DATA_FROM_API:
-                # use api to get year and rating for title
+            # use api to get year and rating for title
+            title = kwargs.get("title")
+            search_result = self.api_handler.get_data(title, OMDBApiParamTypes.TITLE)
+            movie_found = OmdbConstants.item_found(search_result)
+            id_column = OmdbConstants.get_data_constant_key(OmdbConstants.id())
 
-                search_result = self.api_handler.get_data(title, OMDBApiParamTypes.TITLE)
-                movie_found = OmdbConstants.item_found(search_result)
-                id_column = OmdbConstants.get_data_constant_key(OmdbConstants.id())
+            if movie_found:
+                imdb_id = search_result.get(OmdbConstants.id())
+                title = search_result.get(OmdbConstants.title())
+                rating = search_result.get(OmdbConstants.rating())
+                year = search_result.get(OmdbConstants.year())
+                poster = search_result.get(OmdbConstants.poster())
+                country = search_result.get(OmdbConstants.country())
 
-                if movie_found:
-                    id = search_result.get(OmdbConstants.id())
-                    title = search_result.get(OmdbConstants.title())
-                    rating = search_result.get(OmdbConstants.rating())
-                    year = search_result.get(OmdbConstants.year())
-                    poster = search_result.get(OmdbConstants.poster())
-                else:
-                    raise ValueError(f"Movie [{title}] not found in IMDB.")
+                try:
+                    rating = float(rating)
+                except ValueError:
+                    rating = "N/A"
+                try:
+                    year = int(year)
+                except ValueError:
+                    year = "N/A"
 
-            self.data = DataManager.base_add_data_operation(self.data,
-                                                            id_column=id_column,
-                                                            id=id,
-                                                            title=title,
-                                                            rating=float(rating),
-                                                            year=int(year),
-                                                            poster=poster)
-            MovieView.data_added(new_movie=title)
+                self.data = DataManager.base_add_data_operation(self.data,
+                                                                id_column=id_column,
+                                                                id=imdb_id,
+                                                                title=title,
+                                                                rating=rating,
+                                                                year=year,
+                                                                poster=poster,
+                                                                country=country)
+                MovieView.data_added(new_movie=title)
+            else:
+                raise ValueError(f"Movie [{title}] not found in IMDB.")
         except ValueError as e:
             raise e
 
@@ -61,7 +67,7 @@ class MovieModel(BaseModel):
         try:
             Mv.movie_name_validation(movie_name=movie_name)
             movie_already_exists = (movie_name.lower()
-                                    in DataManager.data_by_key(self.data, Jc.title()))
+                                    in DataManager.data_by_key(self.data, Dc.title()))
             if movie_already_exists:
                 raise ValueError(Cs.MOVIE_EXIST)
         except ValueError as e:
@@ -76,15 +82,15 @@ class MovieModel(BaseModel):
 
     def show_random_item_in_data(self):
         """Prints random Movies."""
-        random_index = randint(1, len(self.data))
-        random_movie_data = self.data[str(random_index)]
+        random_key = random.choice(list(self.data.keys()))
+        random_movie_data = self.data[random_key]
         MovieView.random_movie(random_movie_data=random_movie_data)
 
     def search_data(self, search_text: str):
         """method to search Movies."""
         try:
             search_text = search_text.lower()
-            movie_rating_list = DataManager.data_by_keys(self.data, Jc.title(), Jc.rating())
+            movie_rating_list = DataManager.data_by_keys(self.data, Dc.title(), Dc.rating())
             # normal search
             result_found = [x for x in movie_rating_list if search_text in x[0]]
 
@@ -106,7 +112,9 @@ class MovieModel(BaseModel):
         :param reverse: Acending or desciending
         :return:
         """
-        movie_rating_list = DataManager.data_by_keys(self.data, Jc.title(), key)
+        movie_rating_list = DataManager.data_by_keys(self.data, Dc.title(), key)
+        # Remove rating with N/A
+        movie_rating_list = [x for x in movie_rating_list if isinstance(x[1], (int, float))]
         sorted_list = sorted(movie_rating_list, key=lambda x: x[1], reverse=reverse)
         MovieView.display_sorted_data(sorted_list)
 
@@ -126,9 +134,13 @@ class MovieModel(BaseModel):
                 dynamic_filter_dict[2] = lambda x: x[2] <= int(end_year)
 
             movie_rating_year_list = DataManager.data_by_keys(self.data,
-                                                              Jc.title(),
-                                                              Jc.rating(),
-                                                              Jc.year())
+                                                              Dc.title(),
+                                                              Dc.rating(),
+                                                              Dc.year())
+
+            movie_rating_year_list = [x for x in movie_rating_year_list
+                                      if isinstance(x[1], (int, float))]
+
             filtered_data = list(filter(lambda item1:
                                         all(x(item1) for x in dynamic_filter_dict.values()),
                                         movie_rating_year_list))
@@ -145,13 +157,15 @@ class MovieModel(BaseModel):
         (average rating, median rating, the best movies and worst movies).
         """
         try:
-            rating_data = DataManager.data_by_key(self.data, Jc.rating())
+
+            rating_data = DataManager.data_by_key(self.data, Dc.rating())
             # Making sure all entries must be number
-            rating_data = [float(x) for x in rating_data]
+            # some rating value can be 'N/A'
+            rating_data = [x for x in rating_data if isinstance(x, (int, float))]
             avg_rating = sum(rating_data) / len(rating_data)
             median_rating = DataHelpers.find_median(rating_data)
-            best_movies = [x for x in self.data.values() if x[Jc.rating()] == max(rating_data)]
-            worst_movies = [x for x in self.data.values() if x[Jc.rating()] == min(rating_data)]
+            best_movies = [x for x in self.data.values() if x[Dc.rating()] == max(rating_data)]
+            worst_movies = [x for x in self.data.values() if x[Dc.rating()] == min(rating_data)]
             MovieView.display_data_stats(best_movies=best_movies,
                                          worst_movies=worst_movies,
                                          avg_rating=avg_rating,
@@ -162,7 +176,7 @@ class MovieModel(BaseModel):
     def show_data_histogram(self):
         """Method to generate Movie data Histogram."""
         try:
-            movies_rating_list = DataManager.data_by_keys(self.data, Jc.title(), Jc.rating())
+            movies_rating_list = DataManager.data_by_keys(self.data, Dc.title(), Dc.rating())
             plt.hist(movies_rating_list, edgecolor="black")
             plt.title(Cs.MOVIE_HISTOGRAM)
             plt.ylabel(Cs.MOVIE_FREQUENCY)
@@ -184,25 +198,25 @@ class MovieModel(BaseModel):
     # endregion READ
 
     # region UPDATE
-    def update_data_valid_movie(self, update_movie_name):
+
+    def update_data(self, **kwargs):
+        """Method to Update existing Movie."""
+        try:
+            self.data = DataManager.base_update_data_operation(self.data,
+                                                               Dc.title(),
+                                                               **kwargs)
+            MovieView.update_movie_complete(update_movie_name=kwargs.get(Dc.title(), ""))
+        except ValueError as e:
+            raise e
+
+    def update_data_valid_movie_name(self, update_movie_name):
         """Method to validate the existing movie name."""
         try:
             Mv.movie_name_validation(movie_name=update_movie_name)
             movie_exist = (update_movie_name.lower()
-                           in DataManager.data_by_key(self.data, Jc.title()))
+                           in DataManager.data_by_key(self.data, Dc.title()))
             if not movie_exist:
                 raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=update_movie_name))
-        except ValueError as e:
-            raise e
-
-    def update_data(self, title, rating):
-        """Method to Update existing Movie."""
-        try:
-            self.data = DataManager.base_update_data_operation(self.data,
-                                                               Jc.title(),
-                                                               title=title,
-                                                               rating=float(rating))
-            MovieView.update_movie_complete(update_movie_name=title)
         except ValueError as e:
             raise e
 
@@ -217,20 +231,23 @@ class MovieModel(BaseModel):
     # endregion UPDATE
 
     # region DELETE
-    def delete_data(self, movie_name: str):
+    def delete_data(self, title):
         """Method to delete the existing movie."""
         try:
-            success = False
-            movie_exist = movie_name.lower() in DataManager.data_by_key(self.data, Jc.title())
-            if not movie_exist:
-                raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=movie_name))
+            self.data = DataManager.base_delete_data_operation(self.data,
+                                                               Dc.title(),
+                                                               title)
+            MovieView.movie_delete_complete(title=title)
+        except ValueError as e:
+            raise e
 
-            if movie_name in DataManager.data_by_key(self.data, Jc.title()):
-                self.data = DataManager.base_delete_data_operation(self.data,
-                                                                   Jc.title(),
-                                                                   movie_name)
-                success = True
-            MovieView.movie_delete_operation(movie_name=movie_name, success=success)
+    def delete_data_valid(self, title):
+        """Method to validate the existing movie name."""
+        try:
+            movie_exist = (title.lower()
+                           in DataManager.data_by_key(self.data, Dc.title()))
+            if not movie_exist:
+                raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=title))
         except ValueError as e:
             raise e
 
