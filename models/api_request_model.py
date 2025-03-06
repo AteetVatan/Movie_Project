@@ -1,6 +1,6 @@
 """ Module for API Request Model."""
 from config import config
-from env.load_enviorments import LoadEnvironment
+from config.load_enviorments import LoadEnvironment
 from enumerations import OMDBApiParamTypes
 
 
