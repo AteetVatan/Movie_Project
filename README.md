@@ -29,6 +29,13 @@ source .venv/bin/activate  # Mac/Linux
 ```sh
 pip install -r requirements.txt
 ```
+### 4. OMDB API Configration (https://www.omdbapi.com/)
+in config directory create .env file with the keys below
+```bash
+OMDB_API_KEY_NAME=apikey
+OMDB_API_KEY_VALUE= 
+```
+for OMDB_API_KEY_VALUE you can get the key from OMDB API (https://www.omdbapi.com/)
 
 ## Usage
 To start the program, run:
