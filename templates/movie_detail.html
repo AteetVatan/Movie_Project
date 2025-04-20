@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb mt-4" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li class="is-active"><a href="#" aria-current="page">{{ movie.title }}</a></li>
+        </ul>
+    </nav>
+
+    <div class="columns mt-4">
+        <!-- Movie Poster -->
+        <div class="column is-one-third">
+            <div class="card">
+                <div class="card-image">
+                    <figure class="image">
+                        <img src="{{ movie.poster }}" alt="{{ movie.title }}"
+                            onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+                    </figure>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movie Details -->
+        <div class="column">
+            <div class="content">
+                <h1 class="title">{{ movie.title }} <span class="tag is-primary">{{ movie.year }}</span></h1>
+
+                <div class="level mb-5">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <span class="icon-text has-text-warning">
+                                <span class="icon"><i class="fas fa-star"></i></span>
+                                <span>{{ movie.rating }}</span>
+                            </span>
+                        </div>
+                        <div class="level-item">
+                            <span class="icon-text">
+                                <span class="icon"><i class="fas fa-film"></i></span>
+                                <span>{{ movie.genre|join(', ') }}</span>
+                            </span>
+                        </div>
+                        <div class="level-item">
+                            <span class="icon-text">
+                                <span class="icon"><i class="fas fa-globe"></i></span>
+                                <span>{{ movie.language }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plot -->
+                <div class="block">
+                    <h2 class="subtitle">Plot</h2>
+                    <p>{{ movie.plot }}</p>
+                </div>
+
+                <!-- Cast & Crew -->
+                <div class="columns">
+                    <div class="column">
+                        <h2 class="subtitle">Director</h2>
+                        <p class="has-text-weight-semibold">{{ movie.director }}</p>
+                    </div>
+                    <div class="column">
+                        <h2 class="subtitle">Writers</h2>
+                        <p>{{ movie.writer|join(', ') }}</p>
+                    </div>
+                </div>
+
+                <!-- Actors -->
+                <div class="block">
+                    <h2 class="subtitle">Cast</h2>
+                    <div class="tags">
+                        {% for actor in movie.actors %}
+                        <span class="tag is-medium">{{ actor }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="columns">
+                    <div class="column">
+                        <h2 class="subtitle">Country</h2>
+                        <p>{{ movie.country|join(', ') }}</p>
+                    </div>
+                    <div class="column">
+                        <h2 class="subtitle">Awards</h2>
+                        <p>{{ movie.awards|join(', ') }}</p>
+                    </div>
+                </div>
+
+                {% if movie.notes %}
+                <div class="block">
+                    <h2 class="subtitle">Notes</h2>
+                    <div class="notification">
+                        {{ movie.notes }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

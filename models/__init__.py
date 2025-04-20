@@ -1,17 +1,12 @@
 """Models package"""
-from models.file_handler_model import FileHandlerModel
-from models.json_file_handler_model import JsonFileHandlerModel
-from models.movie_model import MovieModel
-from models.menu_operation_output_model import MenuOperationOutputModel
-from models.managers.data_manager import DataManager
-from models.api_request_model import ApiRequestModel
-from models.html_file_handler_model import HtmlFileHandlerModel
+from .movie_cli_model import MovieCliModel
+from .movie_flask_model import MovieFlaskModel
+from .menu_operation_output_model import MenuOperationOutputModel
+from models.utils.data_utils import DataUtils
+from .api_request_model import ApiRequestModel
 
-__all__ = ["FileHandlerModel",
-           "JsonFileHandlerModel",
-           "HtmlFileHandlerModel",
-           "MovieModel",
+__all__ = ["MovieCliModel",
+           "MovieFlaskModel",
            "MenuOperationOutputModel",
-           "DataManager",
-           "ApiRequestModel"
-           ]
+           "DataUtils",
+           "ApiRequestModel"]

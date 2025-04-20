@@ -1,11 +1,11 @@
 """Module for File Manager."""
 from enumerations import FileTypes
-from models import JsonFileHandlerModel
-from models.csv_file_handler_model import CsvFileHandlerModel
+from models.handlers import JsonFileHandlerModel
+from models.handlers import CsvFileHandlerModel
 
 
-class FileManager:
-    """FileManager Factory Class."""
+class FileFactory:
+    """File Factory Class."""
 
     @staticmethod
     def get_file_handler(file_path, file_type=FileTypes.JSON):

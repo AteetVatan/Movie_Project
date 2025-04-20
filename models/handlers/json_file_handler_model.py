@@ -2,7 +2,7 @@
 import json
 import os
 
-from models import FileHandlerModel
+from .file_handler_model import FileHandlerModel
 from helpers import PrintInputHelper as Ph
 
 

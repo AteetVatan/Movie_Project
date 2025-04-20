@@ -1,17 +1,15 @@
 """Module providing interface functionality and abstract CRUD methods which must be implemented on
 Inheritance."""
 from abc import ABC, abstractmethod
-
 from controllers.managers import MenuManager
-from constants.data_constants import DataConstants as Jc
 
 
 class BaseController(ABC):
     """Base class interface will abstract methods."""
 
-    def __init__(self, data_desc: str):
-        self.__menu_items = self.__get_menu_dictionary(data_desc)
-        self.menu_manager = MenuManager(self.__menu_items)
+    def __init__(self, menu_items: dict):
+        self.__menu_items = menu_items
+        self.menu_manager = MenuManager(menu_items)
 
     @property
     def get_menu_items(self):
@@ -107,26 +105,3 @@ class BaseController(ABC):
         return False
 
     # endregion EXIT
-
-    # region private-methods
-    def __get_menu_dictionary(self, data_desc) -> dict:
-        return {
-            1: {"method": self.exit, "desc": "Exit".title()},
-            2: {"method": self.list_data, "desc": f"List {data_desc}s".title()},
-            3: {"method": self.add_data, "desc": f"Add {data_desc}".title()},
-            4: {"method": self.delete_data, "desc": f"Delete {data_desc}".title()},
-            5: {"method": self.update_data, "desc": f"Update {data_desc}".title()},
-            6: {"method": self.data_stats, "desc": "Stats".title()},
-            7: {"method": self.show_random_item_in_data, "desc": f"Random {data_desc}".title()},
-            8: {"method": self.search_data, "desc": f"Search {data_desc}".title()},
-            9: {"method": self.sort_data, "kwargs": {"key": Jc.rating()},
-                "desc": f"{data_desc}s sorted by {Jc.rating()}".title()},
-            10: {"method": self.sort_data, "kwargs": {"key": Jc.year()},
-                 "desc": f"{data_desc}s sorted by {Jc.year()}".title()},
-            11: {"method": self.data_filter, "desc": f"filter {data_desc}".title()},
-            12: {"method": self.show_data_histogram,
-                 "desc": f"Show {data_desc}s Histogram".title()},
-            13: {"method": self.save_data, "desc": "Save".title()},
-            14: {"method": self.generate_website, "desc": "Generate website"}
-        }
-    # endregion private-methods

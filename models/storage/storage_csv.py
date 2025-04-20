@@ -1,6 +1,6 @@
 """The StorageJson Module."""
 from models.storage.istorage import IStorage
-from controllers import MoviesController, MenuController
+from controllers import MoviesCliController, MenuController
 from enumerations import FileTypes
 
 
@@ -10,7 +10,7 @@ class StorageCsv(IStorage):
 
     def __init__(self, file_path):
         self.file_path = file_path
-        self.data_controller = MoviesController(file_path=file_path, file_type=FileTypes.CSV)
+        self.data_controller = MoviesCliController(file_path=file_path, file_type=FileTypes.CSV)
         self.menu_controller = MenuController(self.data_controller)
 
     def list_movies(self):

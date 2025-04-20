@@ -2,24 +2,24 @@
 from abc import ABC, abstractmethod
 
 from config import config
-from enumerations import FileTypes
 from helpers.api_helper import ApiHelper
 from models.api_request_model import ApiRequestModel
-from models.managers import FileManager
+from models.managers import DataManagerInterface
 
 
 class BaseModel(ABC):
     """The Base Model Class."""
     __api_handler: ApiHelper = None
     __api_request_model: ApiRequestModel = None
+    __data_manager: DataManagerInterface = None
 
-    def __init__(self, file_path, file_type = FileTypes.JSON):
-        self.__file_handler = FileManager.get_file_handler(file_path, file_type)
-        if config.USE_DATA_FROM_API:
+    def __init__(self, data_manager: DataManagerInterface):
+        self.__data_manager = data_manager
+        if config.USE_MOVIE_API:
             if not self.__api_request_model:
                 self.__api_request_model = ApiRequestModel()
             self.__api_handler = ApiHelper(self.__api_request_model)
-        self.__data = self.file_handler.read_data()
+        self.__data = self.__data_manager.read_data()
 
     @property
     def data(self):
@@ -30,11 +30,6 @@ class BaseModel(ABC):
     def data(self, data):
         """The main data property setter"""
         self.__data = data
-
-    @property
-    def file_handler(self):
-        """The file_handler object getter"""
-        return self.__file_handler
 
     @property
     def api_handler(self):

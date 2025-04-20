@@ -1,5 +1,5 @@
 """Module for Menu Controller."""
-from constants import ConstantStrings
+from constants import ConstantStrings, DataConstants as Jc
 from controllers.base_controller import BaseController
 from helpers import PrintInputHelper as bp
 from models import MenuOperationOutputModel
@@ -73,3 +73,27 @@ class MenuController:
         method = controller_obj.menu_manager.get_menu_method_by_index(menu_index)
         kwargs = controller_obj.menu_manager.get_menu_arguments_by_index(menu_index)
         return method(**kwargs)
+
+    # region private-methods
+    @staticmethod
+    def get_menu_dictionary(controller_obj, data_desc) -> dict:
+        return {
+            1: {"method": controller_obj.exit, "desc": "Exit".title()},
+            2: {"method": controller_obj.list_data, "desc": f"List {data_desc}s".title()},
+            3: {"method": controller_obj.add_data, "desc": f"Add {data_desc}".title()},
+            4: {"method": controller_obj.delete_data, "desc": f"Delete {data_desc}".title()},
+            5: {"method": controller_obj.update_data, "desc": f"Update {data_desc}".title()},
+            6: {"method": controller_obj.data_stats, "desc": "Stats".title()},
+            7: {"method": controller_obj.show_random_item_in_data, "desc": f"Random {data_desc}".title()},
+            8: {"method": controller_obj.search_data, "desc": f"Search {data_desc}".title()},
+            9: {"method": controller_obj.sort_data, "kwargs": {"key": Jc.rating()},
+                "desc": f"{data_desc}s sorted by {Jc.rating()}".title()},
+            10: {"method": controller_obj.sort_data, "kwargs": {"key": Jc.year()},
+                 "desc": f"{data_desc}s sorted by {Jc.year()}".title()},
+            11: {"method": controller_obj.data_filter, "desc": f"filter {data_desc}".title()},
+            12: {"method": controller_obj.show_data_histogram,
+                 "desc": f"Show {data_desc}s Histogram".title()},
+            13: {"method": controller_obj.save_data, "desc": "Save".title()},
+            14: {"method": controller_obj.generate_website, "desc": "Generate website"}
+        }
+    # endregion private-methods

@@ -1,7 +1,17 @@
 """All Common Configurations"""
 
 # APP_CONFIGRATIONS
-USE_DATA_FROM_API = True
+USE_FLASK = True
+USE_DB_STORAGE = True
+USE_MOVIE_API = True
+
+# SQLITE DB CONFIGURATIONS
+DB_DIRECTORY = "data"
+DB_NAME = "movie_project.db"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_DATABASE_URI ='sqlite:///{db_path}'
+
+
 
 # OMDB API CONFIGURATIONS
 OMDB_API_BASE_URL = "https://www.omdbapi.com"
@@ -24,6 +34,6 @@ HTML_TEMPLATE_MOVIE_GRID_ANCHOR = "__TEMPLATE_MOVIE_GRID__"
 
 # DATA CONFIGURATIONS
 DATA_DIRECTORY = "data"
-
+DATA_FILE = "data.json"
 # flag CDN
 FLAG_CDN ="https://www.countryflags.io/{KEY}/flat/64.png"
