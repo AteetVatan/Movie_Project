@@ -1,4 +1,6 @@
+"""Module for """
 from abc import ABC, abstractmethod
+
 
 class DataManagerInterface(ABC):
     """Interface to abstract data layer between File/DB implementations."""
@@ -8,7 +10,7 @@ class DataManagerInterface(ABC):
     def read_data(self, **kwargs):
         """Read all movie data from the storage."""
         pass
-    
+
     @abstractmethod
     def get_all_users(self):
         """Get all users from the storage."""
@@ -18,6 +20,7 @@ class DataManagerInterface(ABC):
     def get_user_movies(self, user_id):
         """Get all movies associated with a specific user."""
         pass
+
     # endregion
 
     # region CREATE
@@ -25,6 +28,7 @@ class DataManagerInterface(ABC):
     def add_movie(self, **kwargs):
         """Add a new movie to the storage."""
         pass
+
     # endregion
 
     # region UPDATE
@@ -37,6 +41,7 @@ class DataManagerInterface(ABC):
     def write_data(self, **kwargs):
         """Write movie data to the storage."""
         pass
+
     # endregion
 
     # region DELETE

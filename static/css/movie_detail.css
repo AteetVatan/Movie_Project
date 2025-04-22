@@ -1,0 +1,90 @@
+.movie-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.movie-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.movie-content {
+    display: flex;
+    gap: 2rem;
+}
+
+.movie-poster {
+    width: 300px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.movie-info {
+    flex: 1;
+}
+
+.movie-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.movie-meta {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.movie-rating {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+
+.movie-year {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.movie-details {
+    margin-bottom: 2rem;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.detail-label {
+    font-weight: bold;
+    width: 120px;
+    color: var(--primary-color);
+}
+
+.detail-value {
+    flex: 1;
+    color: var(--text-color);
+}
+
+.movie-plot {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+.movie-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}

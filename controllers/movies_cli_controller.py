@@ -2,8 +2,6 @@
 import os
 
 from config import config
-from .base_controller import BaseController
-from .menu_controller import MenuController
 from enumerations import FileTypes
 from validation import MovieValidationManager as Mv
 from helpers import PrintInputHelper
@@ -11,6 +9,8 @@ from helpers.base_print_input_helper import PrintInputHelper as Ph
 from constants import DataConstants as Dc, ConstantStrings as Cs
 from models import MovieCliModel
 from models import MenuOperationOutputModel
+from .base_controller import BaseController
+from .menu_controller import MenuController
 
 
 class MoviesCliController(BaseController):
@@ -40,7 +40,7 @@ class MoviesCliController(BaseController):
                 if isinstance(result, MenuOperationOutputModel):
                     return result
                 title, = result
-                self.movie_model.add_data(title=title)
+                self.movie_model.get_imdb_data(title=title)
                 break
             except ValueError as e:
                 self.movie_model.movie_model_error(e.args[0])

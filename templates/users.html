@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/users.css') }}">
+</head>
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="columns is-multiline">
+        <!-- Add User Card -->
+        <div class="column is-one-third">
+            <div class="add-user-card user-card" id="addUserCard">
+                <span class="icon is-large">
+                    <i class="fas fa-user-plus fa-3x"></i>
+                </span>
+                <p class="mt-4 has-text-centered">Add New User</p>
+            </div>
+        </div>
+
+        <!-- Existing Users -->
+        {% if users %}
+        {% for user in users %}
+        <div class="column is-one-third">
+            <div class="user-card">
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <span class="icon is-large">
+                                <i class="fas fa-user fa-2x"></i>
+                            </span>
+                            <h2 class="title is-4 ml-2">{{ user.name }}</h2>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <div class="level-item">
+                            <div class="buttons">
+                                <a href="/users/{{ user.id }}" class="button is-info is-small">
+                                    <span class="icon">
+                                        <i class="fas fa-film"></i>
+                                    </span>
+                                    <span>View Movies</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-stats">
+                    <div class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Movies</p>
+                                <p class="title is-5">{{ user.movie_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        {% if message %}
+        <div class="column is-full">
+            <div class="notification is-info is-light">
+                <span class="icon">
+                    <i class="fas fa-info-circle"></i>
+                </span>
+                <span>{{ message }}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal" id="addUserModal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Add New User</p>
+            <button class="delete" aria-label="close"></button>
+        </header>
+        <form id="addUserForm" action="/add_user" method="POST">
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="name" placeholder="Enter user name" required>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                    <p class="error-message has-text-danger" style="display: none; margin-top: 0.5rem;"></p>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="submit" class="button is-info">Add User</button>
+                <button type="button" class="button" onclick="closeModal()">Cancel</button>
+            </footer>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+{% endblock %}
+
+</html>

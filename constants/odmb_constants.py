@@ -1,5 +1,5 @@
 """The JsonConstants Module."""
-from constants.data_constants import DataConstants
+from .data_constants import DataConstants
 
 
 class OmdbConstants:
@@ -92,7 +92,7 @@ class OmdbConstants:
     def awards(cls):
         """Method to get the Awards Key."""
         return cls.__awards
-         
+
     @classmethod
     def poster(cls):
         """Method to get the Poster Key."""

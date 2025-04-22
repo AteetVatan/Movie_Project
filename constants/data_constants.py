@@ -4,6 +4,7 @@
 class DataConstants:
     """The JsonConstants Class."""
     __id = "id"
+    __imdb_id = "imdb_id"
     __title = "title"
     __rating = "rating"
     __year = "year"
@@ -22,6 +23,11 @@ class DataConstants:
     def id(cls):
         """Method to get the Title Key."""
         return cls.__id
+
+    @classmethod
+    def imdb_id(cls):
+        """Method to get the IMDB ID Key."""
+        return cls.__imdb_id
 
     @classmethod
     def title(cls):

@@ -77,6 +77,7 @@ class MenuController:
     # region private-methods
     @staticmethod
     def get_menu_dictionary(controller_obj, data_desc) -> dict:
+        """The Menu methods initialization."""
         return {
             1: {"method": controller_obj.exit, "desc": "Exit".title()},
             2: {"method": controller_obj.list_data, "desc": f"List {data_desc}s".title()},
@@ -84,7 +85,8 @@ class MenuController:
             4: {"method": controller_obj.delete_data, "desc": f"Delete {data_desc}".title()},
             5: {"method": controller_obj.update_data, "desc": f"Update {data_desc}".title()},
             6: {"method": controller_obj.data_stats, "desc": "Stats".title()},
-            7: {"method": controller_obj.show_random_item_in_data, "desc": f"Random {data_desc}".title()},
+            7: {"method": controller_obj.show_random_item_in_data,
+                "desc": f"Random {data_desc}".title()},
             8: {"method": controller_obj.search_data, "desc": f"Search {data_desc}".title()},
             9: {"method": controller_obj.sort_data, "kwargs": {"key": Jc.rating()},
                 "desc": f"{data_desc}s sorted by {Jc.rating()}".title()},

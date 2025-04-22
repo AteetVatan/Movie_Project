@@ -1,238 +1,404 @@
+"""Controller for managing movie-related operations and user interactions."""
+import json
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from controllers.base_controller import BaseController
 from models import MovieFlaskModel
+from constants import DataConstants as Dc
 
-class MovieFlaskController():    
-    def __init__(self, app: Flask): 
-        self.app = app        
+
+class MovieFlaskController:
+    """Controller for managing movie-related operations and user interactions."""
+
+    def __init__(self, app: Flask):
+        """Initialize the controller with Flask app instance and register routes."""
+        self.app = app
         self.movie_model = MovieFlaskModel()
         self.register_routes()
-        
+        self.register_error_handlers()
+
     def register_routes(self):
+        """Register all route handlers for the movie application."""
+
+        # region READ Operations
         @self.app.route("/")
         def home():
-            """Showcase Mode (For a Portfolio/Viewer App)
-                / → Home Page Contents
-                📢 Title: "🎥 Welcome to MovieWeb!"
-                🔍 Search bar: "Search for a movie"
-                🏆 Show all movies
-                🎯 Navigation: Links to  /users
-                on home page we can  view all the movies in the Data base
-                and there are navigation link to go to the user"""
-            return self.movie_model.home()
+            """Display the home page with all available movies."""
+            try:
+                movies = self.movie_model.get_all_movies()
+                return self.movie_model.view.render_home_page(
+                    title="🎥 Welcome to Rotten Potato",
+                    movies=movies,
+                    search_placeholder="Search for the User Movies."
+                )
+            except Exception as e:
+                raise e
 
         @self.app.route("/search", methods=['POST'])
         def search():
-            """Search for movies based on user input."""
-            search_text = request.form.get('search_text', '')
+            """Search for movies based on user-provided search text."""
             try:
-                # Call the model's search_data method
+                search_text = request.form.get('search_text', '')
                 movies = self.movie_model.search_data(search_text)
-                
-                # Check if the request is AJAX
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return jsonify({
                         'movies': movies,
                         'search_text': search_text
                     })
-                
-                # Regular form submission
                 return self.movie_model.view.render_home_page(
                     title=f"🎥 Search Results for '{search_text}'",
                     movies=movies,
                     search_placeholder="Search for another movie"
                 )
             except ValueError as e:
-                # Handle search errors
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return jsonify({
                         'error': str(e),
                         'movies': {}
-                    })
-                
-                return self.movie_model.view.render_home_page(
-                    title="🎥 Search Error",
-                    movies={},
-                    search_placeholder=str(e)
-                )
+                    }), 400
+                raise e
+            except Exception as e:
+                raise e
 
         @self.app.route("/users")
         def list_users():
-            """Display list of all users."""
-            users = self.movie_model.get_all_users()
-            return render_template('users.html', users=users)
+            """Display a list of all registered users in the system."""
+            try:
+                users = self.movie_model.get_all_users()
+                user_data = []
+
+                if not users:
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return jsonify({
+                            'success': True,
+                            'users': [],
+                            'message': 'No users found'
+                        })
+                    return render_template('users.html',
+                                           users=[],
+                                           title="🎬 Movie Users",
+                                           message="No users found. Add some users to get started!")
+
+                for user in users:
+                    movie_count = len(self.movie_model.get_user_movies(user.id))
+                    user_data.append({
+                        'id': user.id,
+                        'name': user.name,
+                        'movie_count': movie_count
+                    })
+
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({
+                        'success': True,
+                        'users': user_data
+                    })
+
+                return render_template('users.html',
+                                       users=user_data,
+                                       title="🎬 Movie Users")
+            except Exception as e:
+                raise e
 
         @self.app.route("/users/<int:user_id>")
         def user_movies(user_id):
-            """Display movies for a specific user."""
-            user = self.movie_model.get_user_by_id(user_id)
-            if not user:
-                return "User not found", 404
-            movies = self.movie_model.get_user_movies(user_id)
-            return render_template('user_movies.html', user=user, movies=movies)
+            """Display all movies associated with a specific user."""
+            try:
+                user = self.movie_model.get_user_by_id(user_id)
+                if not user:
+                    raise ValueError("User not found")
 
-        @self.app.route("/add_user", methods=['GET', 'POST'])
-        def add_user():
-            """Add a new user."""
-            if request.method == 'POST':
-                name = request.form.get('name')
-                if name:
-                    success = self.movie_model.add_user(name)
-                    if success:
-                        return redirect(url_for('list_users'))
-            return render_template('add_user.html')
+                movies = self.movie_model.get_user_movies(user_id)
+                movie_data = []
+                for movie in movies:
+                    movie_data.append({
+                        Dc.id(): movie.id,
+                        Dc.imdb_id(): movie.imdb_id,
+                        Dc.title(): movie.title,
+                        Dc.year(): movie.year,
+                        Dc.rating(): movie.rating,
+                        Dc.director(): movie.director,
+                        Dc.actors(): movie.actors,
+                        Dc.plot(): movie.plot,
+                        Dc.poster(): movie.poster,
+                        Dc.genre(): movie.genre,
+                        Dc.country(): movie.country,
+                        Dc.language(): movie.language,
+                        Dc.awards(): movie.awards
+                    })
 
-        @self.app.route("/users/<int:user_id>/add_movie", methods=['GET', 'POST'])
-        def add_user_movie(user_id):
-            """Add a movie to user's favorites."""
-            user = self.movie_model.get_user_by_id(user_id)
-            if not user:
-                return "User not found", 404
-                
-            if request.method == 'POST':
-                movie_id = request.form.get('movie_id')
-                if movie_id:
-                    success = self.movie_model.add_movie_to_user(user_id, movie_id)
-                return redirect(url_for('user_movies', user_id=user_id))
-                
-            movies = self.movie_model.get_all_movies()
-            return render_template('add_user_movie.html', user=user, movies=movies)
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({
+                        'success': True,
+                        'user': {
+                            'id': user.id,
+                            'name': user.name
+                        },
+                        'movies': movie_data
+                    })
 
-        @self.app.route("/users/<int:user_id>/update_movie/<int:movie_id>", methods=['GET', 'POST'])
-        def update_user_movie(user_id, movie_id):
-            """Update a movie in user's favorites."""
-            user = self.movie_model.get_user_by_id(user_id)
-            movie = self.movie_model.get_movie_by_id(movie_id)
-            if not user or not movie:
-                return "User or movie not found", 404
-                
-            if request.method == 'POST':
-                title = request.form.get('title', movie.title)
-                rating = float(request.form.get('rating', movie.rating))
-                success = self.movie_model.update_movie(movie_id, title=title, rating=rating)
-                if success:
-                    return redirect(url_for('user_movies', user_id=user_id))
-            return render_template('update_movie.html', user=user, movie=movie)
-
-        @self.app.route("/users/<int:user_id>/delete_movie/<int:movie_id>")
-        def delete_user_movie(user_id, movie_id):
-            """Remove a movie from user's favorites."""
-            success = self.movie_model.remove_movie_from_user(user_id, movie_id)
-            if success:
-                return redirect(url_for('user_movies', user_id=user_id))
-            return "Failed to remove movie", 400
+                return render_template(
+                    'user_movies.html',
+                    user=user,
+                    movies=movie_data,
+                    title=f"🎬 {user.name}'s Movies"
+                )
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
 
         @self.app.route("/movie/<movie_id>")
         def get_movie(movie_id):
-            """Display detailed information for a specific movie.
-            
-            Args:
-                movie_id: The ID of the movie to display
-                
-            Returns:
-                Rendered movie detail template or 404 if movie not found
-            """
+            """Display detailed information for a specific movie by its ID."""
             try:
-                # Get movie data
                 movie = self.movie_model.get_movie_by_id(movie_id)
                 if not movie:
-                    return "Movie not found", 404
-                    
-                # Check if it's an AJAX request
+                    raise ValueError("Movie not found")
+
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return jsonify({
                         'success': True,
                         'movie': movie
                     })
-                
-                # Regular request - render full page
+
                 return render_template(
                     'movie_detail.html',
                     movie=movie,
                     title=f"🎬 {movie.get('title', 'Movie Details')}"
                 )
-                
+            except ValueError as e:
+                raise e
             except Exception as e:
+                raise e
+
+        # endregion READ Operations
+
+        # region CREATE Operations
+        @self.app.route("/add_user", methods=['POST'])
+        def add_user():
+            """Create a new user in the system."""
+            try:
+                name = request.form.get('name', '').strip()
+
+                if not name:
+                    raise ValueError("Name is required")
+
+                success = self.movie_model.add_user(name)
+
+                if success:
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return jsonify({
+                            'success': True,
+                            'message': f'User {name} added successfully'
+                        })
+                    return redirect(url_for('list_users'))
+                raise ValueError("Failed to add user")
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
+
+        @self.app.route("/users/<int:user_id>/add_movie", methods=['GET', 'POST'])
+        def add_user_movie(user_id):
+            """Add a new movie to a user's favorite list."""
+            try:
+                user = self.movie_model.get_user_by_id(user_id)
+                if not user:
+                    raise ValueError("User not found")
+
+                if request.method == 'POST':
+                    movie_data = request.form.get('movie_data')
+                    if not movie_data:
+                        raise ValueError("Movie data is required")
+
+                    try:
+                        movie = json.loads(movie_data)
+                        success = self.movie_model.add_movie_to_user(user_id, movie)
+
+                        if success:
+                            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                                return jsonify({
+                                    'success': True,
+                                    'message': f'Movie "{movie["title"]}" added successfully',
+                                    'movie': movie,
+                                    'user_id': user_id
+                                })
+                            return redirect(url_for('user_movies', user_id=user_id))
+
+                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            return jsonify({
+                                'success': False,
+                                'error': 'Movie already in user\'s favorites'
+                            }), 200
+                        return render_template('add_user_movie.html',
+                                               user=user,
+                                               title=f"🎬 Add Movie for {user.name}",
+                                               message="Movie already in user's favorites"), 200
+                    except ValueError as e:
+                        raise e
+
+                return render_template('add_user_movie.html',
+                                       user=user,
+                                       title=f"🎬 Add Movie for {user.name}")
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
+
+        # endregion CREATE Operations
+
+        # region UPDATE Operations
+        @self.app.route("/users/<int:user_id>/update_movie/<string:movie_id>",
+                        methods=['GET', 'POST'])
+        def update_user_movie(user_id, movie_id):
+            """Update the notes for a movie in a user's favorite list."""
+            try:
+                user = self.movie_model.get_user_by_id(user_id)
+                if not user:
+                    raise ValueError("User not found")
+
+                movie = self.movie_model.get_movie_by_id(movie_id)
+                if not movie:
+                    raise ValueError("Movie not found")
+
+                if request.method == 'POST':
+                    notes = request.form.get('notes', '').strip()
+                    success = self.movie_model.update_data(movie_id, notes=notes)
+
+                    if success:
+                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            return jsonify({
+                                'success': True,
+                                'message': f'Notes updated successfully for "{movie["title"]}"',
+                                'movie': movie
+                            })
+                        return redirect(url_for('user_movies', user_id=user_id))
+
+                    raise ValueError("Failed to update movie notes")
+
+                # Format movie data for display
+                movie_data = {
+                    'id': movie.get(Dc.id()),
+                    'imdb_id': movie_id,
+                    'title': movie.get(Dc.title()),
+                    'year': movie.get(Dc.year()),
+                    'rating': movie.get(Dc.rating()),
+                    'director': movie.get(Dc.director()),
+                    'actors': movie.get(Dc.actors()),
+                    'plot': movie.get(Dc.plot()),
+                    'poster': movie.get(Dc.poster()),
+                    'genre': movie.get(Dc.genre()),
+                    'country': movie.get(Dc.country()),
+                    'language': movie.get(Dc.language()),
+                    'awards': movie.get(Dc.awards()),
+                    'notes': movie.get(Dc.notes(), '')
+                }
+
+                return render_template('update_movie.html',
+                                       user=user,
+                                       movie=movie_data,
+                                       title=f"🎬 Update Notes for {movie_data['title']}")
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
+
+        # endregion UPDATE Operations
+
+        # region DELETE Operations
+        @self.app.route("/users/<int:user_id>/delete_movie/<string:movie_id>")
+        def delete_user_movie(user_id, movie_id):
+            """Remove a movie from a user's favorites list."""
+            try:
+                success = self.movie_model.remove_movie_from_user(user_id, movie_id)
+                if success:
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return jsonify({
+                            'success': True,
+                            'message': 'Movie removed successfully'
+                        })
+                    return redirect(url_for('user_movies', user_id=user_id))
+                raise ValueError("Failed to remove movie")
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
+
+        # endregion DELETE Operations
+
+        # region API Operations
+        @self.app.route("/get_imdb_movie", methods=['POST'])
+        def get_imdb_movie():
+            """Fetch movie details from the IMDB API based on title."""
+            try:
+                title = request.form.get('title', '').strip()
+                if not title:
+                    raise ValueError("Title is required")
+                response = self.movie_model.get_imdb_data(title=title)
+                return response
+            except ValueError as e:
+                raise e
+            except Exception as e:
+                raise e
+
+        @self.app.route("/sort")
+        def sort():
+            """Sort and display movies based on specified criteria and order."""
+            try:
+                sort_by = request.args.get('sort', 'title')
+                order = request.args.get('order', 'asc')
+
+                movies = self.movie_model.sort_data(sort_by, order == 'desc')
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return jsonify({
-                        'success': False,
-                        'error': str(e)
-                    }), 400
-                return f"Error loading movie: {str(e)}", 400
+                        'success': True,
+                        'movies': movies
+                    })
+                return self.movie_model.view.render_home_page(
+                    title=f"🎥 Movies sorted by {sort_by}",
+                    movies=movies,
+                    search_placeholder="Search for a movie"
+                )
+            except Exception as e:
+                raise e
+        # endregion API Operations
 
-    #   # region CREATE
-    # def add_data(self) -> bool:
-    #     """Abstract method to add data."""
-    #     return False
+    def register_error_handlers(self):
+        """Register error handlers for the application."""
 
-    # # endregion CREATE
+        @self.app.errorhandler(400)
+        def bad_request(e):
+            """Error handler for bad requests."""
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({
+                    'success': False,
+                    'error': 'Bad Request',
+                    'message': str(e)
+                }), 400
+            return render_template('error.html',
+                                   message="Bad Request",
+                                   title="400 - Bad Request"), 400
 
-    # # region READ  
-    # def list_data(self) -> bool:
-    #     """Abstract method to list data."""
-    #     return False
+        @self.app.errorhandler(404)
+        def page_not_found(e):
+            """Error handler for page not found."""
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({
+                    'success': False,
+                    'error': 'Not Found',
+                    'message': str(e)
+                }), 404
+            return render_template('error.html',
+                                   message="Page not found",
+                                   title="404 - Not Found"), 404
 
-   
-    # def show_random_item_in_data(self) -> bool:
-    #     """Abstract method to show random item in data."""
-    #     return False
-
-   
-    # def search_data(self) -> bool:
-    #     """Abstract method to search data."""
-    #     return False
-
-    
-    # def sort_data(self, key, reverse=False) -> bool:
-    #     """Abstract method to Sort data by given key."""
-    #     return False
-
-    
-    # def data_stats(self) -> bool:
-    #     """Abstract method for data stat."""
-    #     return False
-
-    
-    # def data_filter(self) -> bool:
-    #     """Abstract method for data filter."""
-    #     return False
-
-    
-    # def generate_website(self) -> bool:
-    #     """Abstract method to delete item in data."""
-    #     return False
-
-    # # endregion READ
-
-    # # region UPDATE @abstractmethod
-    # def update_data(self) -> bool:
-    #     """Abstract method to update data."""
-    #     return False
-
-   
-    # def show_data_histogram(self) -> bool:
-    #     """Abstract method to show histogram for data."""
-    #     return False
-
-    # # endregion UPDATE
-
-    # # region DELETE
-   
-    # def delete_data(self) -> bool:
-    #     """Abstract method to delete item in data."""
-    #     return False
-
-   
-    # def save_data(self) -> bool:
-    #     """Abstract method to delete item in data."""
-    #     return False
-
-    # # endregion DELETE
-
-    # # region EXIT
-   
-    # def exit(self) -> bool:
-    #     """Abstract method to exit the run time environment."""
-    #     return False
-
-    # endregion EXIT
+        @self.app.errorhandler(500)
+        def internal_server_error(e):
+            """Error handler for internal server error."""
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({
+                    'success': False,
+                    'error': 'Internal Server Error',
+                    'message': str(e)
+                }), 500
+            return render_template('error.html',
+                                   message="An internal server error occurred",
+                                   title="500 - Internal Server Error"), 500

@@ -1,8 +1,7 @@
 """The main Module."""
 import argparse
-import os
 from config import config
-from singletons import get_app, get_db
+from singletons import AppInstance, DbInstance
 from scripts.seed_movies import seed_movies_json_to_db
 from constants import ConstantStrings
 from helpers import PrintInputHelper as bp
@@ -39,12 +38,12 @@ def get_cmd_arguments():
     return args.file_name
 
 
-if __name__ == "__main__":   
-    if config.USE_DB_STORAGE:        
-        app = get_app()       
-        db = get_db()
-        with app.app_context():
-            db.create_all()
+if __name__ == "__main__":
+    if config.USE_DB_STORAGE:
+        APP = AppInstance.get_app()
+        DB = DbInstance.get_db()
+        with APP.app_context():
+            DB.create_all()
             seed_movies_json_to_db()
             main()
     else:

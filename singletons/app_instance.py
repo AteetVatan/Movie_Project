@@ -1,11 +1,17 @@
-# app_instance.py
+"""The App instance Module"""
 
 from .app_factory import create_app
 
-app = None  # this will hold the singleton app instance
+APP = None  # this will hold the singleton app instance
 
-def get_app():
-    global app
-    if not app:
-        app = create_app()
-    return app
+
+class AppInstance:
+    """The Singleton Flask Appinstance class."""
+    _app_instance = None
+
+    @classmethod
+    def get_app(cls):
+        """Method for singleton app instance"""
+        if not cls._app_instance:
+            cls._app_instance = create_app()
+        return cls._app_instance

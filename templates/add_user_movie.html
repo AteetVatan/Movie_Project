@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_user_movie.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="add-movie-container">
+    <div class="search-container">
+        <h1 class="title">Add Movie</h1>
+
+        <!-- Search Box -->
+        <div class="search-form">
+            <div class="search-input">
+                <div class="field">
+                    <label class="label">Search for a movie</label>
+                    <div class="control has-icons-left">
+                        <input class="input is-medium" type="text" id="movieSearch" placeholder="Enter movie title...">
+                        <span class="icon is-medium is-left">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="search-results" id="searchResults">
+            <div class="loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Searching for movies...</p>
+            </div>
+        </div>
+
+        <!-- Selected Movie Display -->
+        <div id="selectedMovieDisplay" class="movie-result" style="display: none;">
+            <div class="movie-result-header">
+                <img id="selectedMoviePoster" src="" alt="Movie Poster" class="movie-poster">
+                <div class="movie-details">
+                    <h2 class="movie-title" id="selectedMovieTitleDisplay"></h2>
+                    <div class="movie-meta">
+                        <span class="movie-rating" id="selectedMovieRating"></span>
+                        <span class="movie-year" id="selectedMovieYear"></span>
+                    </div>
+                    <div class="movie-info">
+                        <p><strong>Genre:</strong> <span id="selectedMovieGenre"></span></p>
+                        <p><strong>Director:</strong> <span id="selectedMovieDirector"></span></p>
+                        <p class="movie-plot"><strong>Plot:</strong> <span id="selectedMoviePlot"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="addMovieForm" action="{{ url_for('add_user_movie', user_id=user.id) }}" method="POST">
+                <input type="hidden" name="title" id="selectedMovieTitle">
+                <input type="hidden" name="movie_data" id="selectedMovieData">
+
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary is-medium is-fullwidth add-button"
+                            style="display: none;">
+                            <span class="icon">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span>Add Movie</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification is-hidden">
+    <button id="closeNotification" class="delete"></button>
+    <p class="message"></p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/add_user_movie.js') }}"></script>
+{% endblock %}

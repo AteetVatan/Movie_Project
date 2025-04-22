@@ -38,7 +38,7 @@ class BaseModel(ABC):
 
     # region CREATE
     @abstractmethod
-    def add_data(self, **kwargs):
+    def get_imdb_data(self, **kwargs):
         """Adds data."""
         return
 

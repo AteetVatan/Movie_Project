@@ -1,0 +1,179 @@
+:root {
+    --primary-color: #000000;
+    --secondary-color: #6c3;
+    --accent-color: #f60;
+    --text-color: #666;
+    --light-bg: #f8f8f8;
+}
+
+body {
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: var(--primary-color);
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.header .title {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.user-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.user-card:hover {
+    transform: translateY(-2px);
+}
+
+.add-user-card {
+    border: 2px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.3s;
+}
+
+.add-user-card:hover {
+    border-color: var(--secondary-color);
+    background: #f9f9f9;
+}
+
+.user-stats {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.modal-card-title {
+    color: var(--primary-color);
+}
+
+.error-message {
+    color: #ff3860;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.navbar {
+    background-color: transparent;
+}
+
+.navbar-brand {
+    min-height: 3.25rem;
+    align-items: center;
+}
+
+.navbar-item {
+    color: white !important;
+    transition: opacity 0.3s;
+}
+
+.navbar-item:hover {
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-item.is-active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    font-weight: bold;
+}
+
+.navbar-brand .title {
+    color: white;
+    margin-bottom: 0;
+}
+
+.users-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.users-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.user-avatar i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.user-movie-count {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.user-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}

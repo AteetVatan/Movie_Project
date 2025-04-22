@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    {% block styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
 </head>
 
 <body>
@@ -25,16 +24,15 @@
                     </a>
                 </div>
 
-                <div class="navbar-menu">
+                <div class="navbar-menu is-active">
                     <div class="navbar-start">
-                        <a href="/" class="navbar-item {% if request.path == '/' %}is-active{% endif %}">
+                        <a href="/" class="navbar-item">
                             <span class="icon">
                                 <i class="fas fa-home"></i>
                             </span>
                             <span>Home</span>
                         </a>
-                        <a href="/users"
-                            class="navbar-item {% if request.path.startswith('/users') %}is-active{% endif %}">
+                        <a href="/users" class="navbar-item">
                             <span class="icon">
                                 <i class="fas fa-users"></i>
                             </span>
@@ -46,9 +44,21 @@
         </div>
     </header>
 
-    {% block content %}{% endblock %}
-
-    {% block scripts %}{% endblock %}
+    <div class="container">
+        <div class="error-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2 class="error-title">{{ title }}</h2>
+            <p class="error-message">{{ message }}</p>
+            <a href="/" class="button is-info">
+                <span class="icon">
+                    <i class="fas fa-home"></i>
+                </span>
+                <span>Return to Home</span>
+            </a>
+        </div>
+    </div>
 </body>
 
 </html>

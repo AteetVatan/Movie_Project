@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_movies.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a href="/" class="navbar-item">
+                        <span class="icon is-large">
+                            <i class="fas fa-film fa-2x"></i>
+                        </span>
+                        <h1 class="title is-4 ml-2">{{ title }}</h1>
+                    </a>
+                </div>
+
+                <div class="navbar-menu is-active">
+                    <div class="navbar-start">
+                        <a href="/" class="navbar-item">
+                            <span class="icon">
+                                <i class="fas fa-home"></i>
+                            </span>
+                            <span>Home</span>
+                        </a>
+                        <a href="/users" class="navbar-item">
+                            <span class="icon">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <span>Users</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <span class="icon is-large">
+                            <i class="fas fa-user fa-2x"></i>
+                        </span>
+                        <h2 class="title is-3 ml-2">{{ user.name }}'s Movies</h2>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <a href="/users/{{ user.id }}/add_movie" class="button is-info">
+                            <span class="icon">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span>Add Movie</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if movies %}
+        <div class="columns is-multiline">
+            {% for movie in movies %}
+            <div class="column is-one-third">
+                <div class="movie-card">
+                    <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="movie-poster"
+                        onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+                    <div class="movie-info">
+                        <h3 class="movie-title">{{ movie.title }}</h3>
+                        <div class="movie-meta">
+                            <span class="movie-rating">{{ movie.rating }}</span>
+                            <span class="movie-year">{{ movie.year }}</span>
+                        </div>
+                        <div class="movie-details">
+                            <p><strong>Director:</strong> {{ movie.director }}</p>
+                            <p><strong>Genre:</strong> {{ movie.genre|join(', ') if movie.genre is iterable and
+                                movie.genre is not string else movie.genre }}</p>
+                            <p class="mt-2">{{ movie.plot[:150] }}{% if movie.plot|length > 150 %}...{% endif %}</p>
+                        </div>
+                        <div class="movie-actions">
+                            <a href="/users/{{ user.id }}/update_movie/{{ movie.imdb_id }}"
+                                class="button is-small is-warning">
+                                <span class="icon">
+                                    <i class="fas fa-edit"></i>
+                                </span>
+                                <span>Edit</span>
+                            </a>
+                            <a href="/users/{{ user.id }}/delete_movie/{{ movie.imdb_id }}"
+                                class="button is-small is-danger delete-movie" data-movie-id="{{ movie.imdb_id }}"
+                                data-movie-title="{{ movie.title }}">
+                                <span class="icon">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <span>Remove</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-film"></i>
+            </div>
+            <h3 class="title is-4">No Movies Yet</h3>
+            <p class="subtitle">Start building your movie collection!</p>
+            <a href="/users/{{ user.id }}/add_movie" class="button is-info mt-4">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Add Your First Movie</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete-movie');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const movieId = this.dataset.movieId;
+                    const movieTitle = this.dataset.movieTitle;
+                    const userId = "{{ user.id }}";
+
+                    if (confirm(`Are you sure you want to remove "${movieTitle}" from your collection?`)) {
+                        fetch(`/users/${userId}/delete_movie/${movieId}`, {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    window.location.reload();
+                                } else {
+                                    alert('Failed to remove movie. Please try again.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred while removing the movie.');
+                            });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

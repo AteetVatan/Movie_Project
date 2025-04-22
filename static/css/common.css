@@ -1,0 +1,68 @@
+:root {
+    --primary-color: #008B8B;
+    --secondary-color: #20B2AA;
+    --accent-color: #48D1CC;
+    --text-color: #2F4F4F;
+    --background-color: #E0FFFF;
+    --card-background: #ffffff;
+    --border-color: #AFEEEE;
+    --hover-color: #F0FFFF;
+    --shadow-color: rgba(0, 139, 139, 0.1);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: var(--primary-color);
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.navbar {
+    background-color: transparent;
+}
+
+.navbar-item {
+    color: white !important;
+    transition: opacity 0.3s;
+}
+
+.navbar-item:hover {
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.button {
+    transition: all 0.3s;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button.is-warning {
+    background-color: var(--accent-color);
+}
+
+.button.is-warning:hover {
+    background-color: #e55a00;
+}
+
+.is-danger {
+    border-color: #ff3860 !important;
+}
+
+.help.is-danger {
+    color: #ff3860;
+    display: none;
+}

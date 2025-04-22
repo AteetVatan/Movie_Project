@@ -1,9 +1,8 @@
 """Module to create, read and write JSON data"""
 import json
 import os
-
-from .file_handler_model import FileHandlerModel
 from helpers import PrintInputHelper as Ph
+from .file_handler_model import FileHandlerModel
 
 
 class JsonFileHandlerModel(FileHandlerModel):

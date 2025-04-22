@@ -1,20 +1,20 @@
 """The MovieModel Module."""
 import random
 import sys
+from flask import jsonify
 from matplotlib import pyplot as plt
-from models.handlers.html_file_handler_model import HtmlFileHandlerModel
+from models.handlers import HtmlFileHandlerModel
 from models.utils import DataUtils
-from models.managers.file_data_manager import FileDataManager
-from models.managers.sql_alchemy_data_manager import SQLAlchemyDataManager
-from views import MovieCliView
+from models.managers import FileDataManager
+from models.managers import SQLAlchemyDataManager
+from models.base_model import BaseModel
+from views import MovieCliView, MovieFlaskView
 from validation import MovieValidationManager as Mv
 from helpers import DataHelpers
 from enumerations import FileTypes, OMDBApiParamTypes
 from constants.odmb_constants import OmdbConstants
 from constants import DataConstants as Dc, ConstantStrings as Cs
 from config import config
-from models.base_model import BaseModel
-from views.movie_flask_view import MovieFlaskView
 
 
 class MovieFlaskModel(BaseModel):
@@ -29,64 +29,72 @@ class MovieFlaskModel(BaseModel):
             self.data_manager = FileDataManager(file_path, file_type)
 
         super().__init__(self.data_manager)
-        self.view = MovieFlaskView()     
+
+        for x in self.data:
+            self.data[x][Dc.id()] = x
+
+        self.view = MovieFlaskView()
         self.__html_file_handler = HtmlFileHandlerModel()
 
-    def home(self):
-        """Showcase Mode (For a Portfolio/Viewer App)
-        - Home Page Contents
-        - Title: "🎥 Welcome to MovieWeb!"
-        - Search bar: "Search for a movie"
-        - Show all movies
-        - Navigation: Links to /users
-        """
-        # Get all movies from database
-        movies = self.data_manager.get_all_movies(self.data)    
-        
-        # Render home page with movies and navigation
-        return self.view.render_home_page(
-            title="🎥 Welcome to MovieWeb!",
-            movies=movies,
-            search_placeholder="Search for a movie"
-        )
+    def get_all_movies(self):
+        """Method to get all Movies"""
+        return self.data_manager.get_all_movies(self.data)
 
     def get_all_users(self):
-        """Get all users from database."""
+        """Get all users from the database."""
         return self.data_manager.get_all_users()
-        
+
     def get_user_by_id(self, user_id):
-        """Get user by ID from database."""
+        """Get user by ID from a database."""
         return self.data_manager.get_user_by_id(user_id)
-        
+
     def get_user_movies(self, user_id):
         """Get all movies for a specific user."""
         return self.data_manager.get_user_movies(user_id)
-        
+
     def add_user(self, name):
         """Add a new user to the database."""
         return self.data_manager.add_user(name)
-        
-    def add_movie_to_user(self, user_id, movie_id):
+
+    def add_movie_to_user(self, user_id, movie):
         """Add a movie to user's favorites."""
-        return self.data_manager.add_movie_to_user(user_id, movie_id)
-        
-    def update_movie(self, movie_id, **kwargs):
+        # modify current data
+        movie_id = movie.get(Dc.id())
+        if self.data.get(movie_id) is None:
+            # Movie isn't found, add it to self.data
+            self.data[movie_id] = movie
+        return self.data_manager.add_movie_to_user(user_id, movie_id, movie)
+
+    def update_data(self, movie_id, **kwargs):
         """Update movie details."""
-        return self.data_manager.update_movie(movie_id, **kwargs)
-        
+        try:
+            self.data = self.data_manager.update_movie(self.data, movie_id, **kwargs)
+            return True
+        except ValueError:
+            return False
+
     def remove_movie_from_user(self, user_id, movie_id):
         """Remove a movie from user's favorites."""
-        return self.data_manager.remove_movie_from_user(user_id, movie_id)
+
+        try:
+            if self.data.get(movie_id) is None:
+                return False
+
+            self.data.pop(movie_id)
+            self.data_manager.remove_movie_from_user(user_id, movie_id)
+            return True
+        except ValueError:
+            return False
 
     # region CREATE
-    def add_data(self, **kwargs):
+    def get_imdb_data(self, **kwargs):
         """Adds a new movie to the data."""
         try:
             # use api to get year and rating for title
             title = kwargs.get("title")
             search_result = self.api_handler.get_data(title, OMDBApiParamTypes.TITLE)
             movie_found = OmdbConstants.item_found(search_result)
-            id_column = OmdbConstants.get_data_constant_key(OmdbConstants.id())
+            # id_column = OmdbConstants.get_data_constant_key(OmdbConstants.id())
 
             if movie_found:
                 imdb_id = search_result.get(OmdbConstants.id())
@@ -112,24 +120,29 @@ class MovieFlaskModel(BaseModel):
                 except ValueError:
                     year = "N/A"
 
-                self.data_manager.add_movie(data=self.data,
-                                            id_column=id_column,
-                                            id=imdb_id,
-                                            title=title,
-                                            rating=rating,
-                                            year=year,
-                                            poster=poster,
-                                            country=country,
-                                            director=director,
-                                            actors=actors,
-                                            writer=writer,
-                                            genre=genre,
-                                            plot=plot,
-                                            language=language,
-                                            awards=awards)
-                MovieCliView.data_added(new_movie=title)
-            else:
-                raise ValueError(f"Movie [{title}] not found in IMDB.")
+                return jsonify({
+                    'success': True,
+                    'movie': {
+                        Dc.imdb_id(): imdb_id,
+                        Dc.title(): title,
+                        Dc.rating(): rating,
+                        Dc.year(): year,
+                        Dc.poster(): poster,
+                        Dc.country(): country,
+                        Dc.director(): director,
+                        Dc.actors(): actors,
+                        Dc.writer(): writer,
+                        Dc.genre(): genre,
+                        Dc.plot(): plot,
+                        Dc.language(): language,
+                        Dc.awards(): awards
+                    }
+                })
+
+            return jsonify({
+                'success': False,
+                'error': f"Movie [{title}] not found in IMDB."
+            })
         except ValueError as e:
             raise e
 
@@ -161,44 +174,45 @@ class MovieFlaskModel(BaseModel):
         """method to search existing Movies."""
         try:
             search_text = search_text.lower()
-            movie_rating_list = DataUtils.data_by_keys(self.data, Dc.title(), Dc.rating())
+            movie_id_list = DataUtils.data_by_keys(self.data, Dc.title(), Dc.id())
             # normal search
-            result_found = [x for x in movie_rating_list if search_text in x[0]]
+            result_found = [x for x in movie_id_list if search_text in x[0]]
 
             if len(result_found) <= 0:  # fuzzy search
                 result_found = list(DataHelpers.fuzzy_string_matching(
-                    movie_rating_list, search_text))
-            
+                    movie_id_list, search_text))
+
             movie_data_list = []
             if len(result_found) > 0:
-               for title, rating in result_found:
-                   movie_data = self.get_movie_by_title(title)
-                   movie_data_list.append(movie_data)
-            
+                for item in result_found:
+                    movie_data = self.data[item[1]]
+                    movie_data_list.append(movie_data)
+
             return movie_data_list
         except ValueError as e:
             raise e
-        
-    def get_movie_by_id(self ,id):
+
+    def get_movie_by_id(self, unique_id):
         """Get all movies from the database."""
         movie_data = self.data
-        movie = [(k,v) for k,v in movie_data.items() if k.strip().lower() == id.strip().lower()]
+        movie = [(k, v) for k, v in movie_data.items()
+                 if k.strip().lower() == unique_id.strip().lower()]
         if len(movie) == 0:
-            raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=id))
-        movie[0][1][Dc.id()]=movie[0][0] #add the id to the movie data
+            raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=unique_id))
+        movie[0][1][Dc.id()] = movie[0][0]  # add the id to the movie data
         return movie[0][1]
-        
+
     def get_movie_by_title(self, title):
         """Get all movies from the database."""
-         # Transform movies dictionary into a list for template
+        # Transform movie dictionary into a list for template
         movie_data = self.data
-        movie = [(k,v) for k,v in movie_data.items() if v[Dc.title()].strip().lower() == title.strip().lower()]
+        movie = [(k, v) for k, v in movie_data.items()
+                 if v[Dc.title()].strip().lower() == title.strip().lower()]
         if len(movie) == 0:
             raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=title))
-        
-        movie[0][1][Dc.id()]=movie[0][0] #add the id to the movie data
+
+        movie[0][1][Dc.id()] = movie[0][0]  # add the id to the movie data
         return movie[0][1]
-        
 
     def sort_data(self, key, reverse=False):
         """Method to sort the data.
@@ -206,11 +220,17 @@ class MovieFlaskModel(BaseModel):
         :param reverse: Acending or desciending
         :return:
         """
-        movie_rating_list = DataUtils.data_by_keys(self.data, Dc.title(), key)
+        id_key_list = DataUtils.data_by_keys(self.data, Dc.id(), key)
         # Remove rating with N/A
-        movie_rating_list = [x for x in movie_rating_list if isinstance(x[1], (int, float))]
-        sorted_list = sorted(movie_rating_list, key=lambda x: x[1], reverse=reverse)
-        MovieCliView.display_sorted_data(sorted_list)
+        if key == Dc.rating() or key == Dc.year():
+            id_key_list = [x for x in id_key_list if isinstance(x[1], (int, float))]
+        sorted_list = sorted(id_key_list, key=lambda x: x[1], reverse=reverse)
+
+        movie_data_list = []
+        for item in sorted_list:
+            movie_data = self.data[item[0]]
+            movie_data_list.append(movie_data)
+        return movie_data_list
 
     def data_filter(self, rating, start_year, end_year):
         """Method the filter the movie data by ratings, start year and end year."""
@@ -261,9 +281,9 @@ class MovieFlaskModel(BaseModel):
             best_movies = [x for x in self.data.values() if x[Dc.rating()] == max(rating_data)]
             worst_movies = [x for x in self.data.values() if x[Dc.rating()] == min(rating_data)]
             MovieCliView.display_data_stats(best_movies=best_movies,
-                                         worst_movies=worst_movies,
-                                         avg_rating=avg_rating,
-                                         median_rating=median_rating)
+                                            worst_movies=worst_movies,
+                                            avg_rating=avg_rating,
+                                            median_rating=median_rating)
         except ValueError as e:
             raise e
 
@@ -292,28 +312,6 @@ class MovieFlaskModel(BaseModel):
     # endregion READ
 
     # region UPDATE
-
-    def update_data(self, **kwargs):
-        """Method to Update existing Movie."""
-        try:
-            self.data = self.data_manager.update_movie(self.data,
-                                                       Dc.title(),
-                                                       **kwargs)
-
-            MovieCliView.update_movie_complete(update_movie_name=kwargs.get(Dc.title(), ""))
-        except ValueError as e:
-            raise e
-
-    def update_data_valid_movie_name(self, update_movie_name):
-        """Method to validate the existing movie name."""
-        try:
-            Mv.movie_name_validation(movie_name=update_movie_name)
-            movie_exist = (update_movie_name.lower()
-                           in DataUtils.data_by_key(self.data, Dc.title()))
-            if not movie_exist:
-                raise ValueError(Cs.MOVIE_NOT_EXIST.format(KEY1=update_movie_name))
-        except ValueError as e:
-            raise e
 
     def save_data(self) -> bool:
         """Method to save movie."""
@@ -363,4 +361,9 @@ class MovieFlaskModel(BaseModel):
     def movie_model_error(error):
         """Method for Movie Modal Errors."""
         MovieCliView.movie_error(error)
+
     # endregion static-methods
+
+    def get_movie_object_from_json(self, imdb_id, movie_data):
+        """Method to get the movie object from the json data."""
+        return self.data_manager.get_movie_object_from_json(imdb_id, movie_data)

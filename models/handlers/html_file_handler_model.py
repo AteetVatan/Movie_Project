@@ -1,8 +1,7 @@
 """The HTML File operations module."""
 import os
-
-from .file_handler_model import FileHandlerModel
 from config import config
+from .file_handler_model import FileHandlerModel
 
 
 class HtmlFileHandlerModel(FileHandlerModel):

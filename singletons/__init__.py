@@ -1,4 +1,5 @@
-from .db_instance import get_db
-from .app_instance import get_app
+"""Module for singletons."""
+from .db_instance import DbInstance
+from .app_instance import AppInstance
 
-__all__ = ["get_db", "get_app"]
+__all__ = ["DbInstance", "AppInstance"]

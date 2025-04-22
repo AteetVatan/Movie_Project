@@ -1,0 +1,266 @@
+:root {
+    --primary-color: #008B8B;
+    --secondary-color: #20B2AA;
+    --accent-color: #48D1CC;
+    --text-color: #2F4F4F;
+    --background-color: #E0FFFF;
+    --card-background: #ffffff;
+    --border-color: #AFEEEE;
+    --hover-color: #F0FFFF;
+    --shadow-color: rgba(0, 139, 139, 0.1);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: var(--primary-color);
+    padding: 0.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.header .title {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.navbar {
+    background-color: transparent;
+}
+
+.navbar-brand {
+    min-height: 3.25rem;
+    align-items: center;
+}
+
+.navbar-item {
+    color: white !important;
+    transition: opacity 0.3s;
+}
+
+.navbar-item:hover {
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-item.is-active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    font-weight: bold;
+}
+
+.navbar-brand .title {
+    color: white;
+    margin-bottom: 0;
+}
+
+.container {
+    flex: 1;
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.movie-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.movie-poster {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.movie-info {
+    padding: 1rem;
+}
+
+.movie-title {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.movie-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.metascore {
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.user-score {
+    color: var(--accent-color);
+}
+
+.movie-details {
+    font-size: 0.9rem;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-list li:last-child {
+    border-bottom: none;
+}
+
+.sidebar-list a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.sidebar-list a:hover {
+    color: var(--primary-color);
+}
+
+.movie-of-day {
+    text-align: center;
+}
+
+.sidebar-poster {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.movie-of-day-title {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.movie-of-day-meta {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.movie-of-day-details {
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.movie-plot {
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.dropdown-menu {
+    width: 100%;
+}
+
+.dropdown-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--light-bg);
+}
+
+.media {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.media-left {
+    flex-shrink: 0;
+}
+
+.media-content {
+    flex: 1;
+}
+
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.notes {
+    position: fixed;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.message {
+    background-color: #9b2727 !important;
+    padding: 4px !important;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .movie-card {
+        margin-bottom: 1rem;
+    }
+
+    .sidebar {
+        margin-top: 2rem;
+    }
+}

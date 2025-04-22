@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb mt-4" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/users/{{ user.id }}">{{ user.name }}</a></li>
+            <li class="is-active"><a href="#" aria-current="page">Update Movie</a></li>
+        </ul>
+    </nav>
+
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-content">
+                <h1 class="title">Update Movie Notes</h1>
+                <form id="updateMovieForm" method="POST" action="/users/{{ user.id }}/update_movie/{{ movie.imdb_id }}">
+                    <div class="field">
+                        <label class="label">Movie Title</label>
+                        <div class="control">
+                            <input class="input" type="text" value="{{ movie.title }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Notes</label>
+                        <div class="control">
+                            <textarea class="textarea" name="notes" id="movieNotes"
+                                placeholder="Add your notes about this movie...">{{ movie.notes if movie.notes else '' }}</textarea>
+                        </div>
+                        <p class="help is-danger" id="notesError" style="display: none;">Please enter some notes about
+                            the movie.</p>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <button type="submit" class="button is-primary">Update Notes</button>
+                            <a href="/users/{{ user.id }}" class="button is-light">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification is-hidden">
+        <button id="closeNotification" class="delete"></button>
+        <p class="message"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/update_movie.js') }}"></script>
+{% endblock %}

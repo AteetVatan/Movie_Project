@@ -1,9 +1,9 @@
 """Module to create, read and write data"""
 import csv
 import os
-from .file_handler_model import FileHandlerModel
-from helpers import PrintInputHelper as Ph
 from constants import DataConstants
+from helpers import PrintInputHelper as Ph
+from .file_handler_model import FileHandlerModel
 
 
 class CsvFileHandlerModel(FileHandlerModel):

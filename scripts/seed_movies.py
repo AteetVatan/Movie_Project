@@ -1,20 +1,23 @@
-# seed_movies.py
+"""Script to populate DB"""
 
 import os
 from models.managers import SQLAlchemyDataManager
 from models.handlers import JsonFileHandlerModel
 from config import config
 
+
 def safe_join_list(value):
+    """Utility method."""
     return ", ".join(value) if isinstance(value, list) else value or ""
+
 
 def seed_movies_json_to_db():
     """Seed the database with movies from JSON file."""
     # Ensure the data directory exists
     data_dir = os.path.join(os.getcwd(), config.DATA_DIRECTORY)
     os.makedirs(data_dir, exist_ok=True)
-    
-    manager = SQLAlchemyDataManager()        
+
+    manager = SQLAlchemyDataManager()
     file_path = os.path.join(data_dir, config.DATA_FILE)
     file_handler = JsonFileHandlerModel(file_path)
     movie_data = file_handler.read_data()
@@ -51,4 +54,3 @@ def seed_movies_json_to_db():
 
         except Exception as e:
             print(f"❌ Failed to insert {movie.get('title')} - {e}")
-

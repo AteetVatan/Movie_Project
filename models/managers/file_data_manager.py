@@ -1,9 +1,9 @@
 """File-based implementation of the DataManagerInterface for movie management."""
 
-from .data_manager_interface import DataManagerInterface
 from enumerations import FileTypes
 from models.factories import FileFactory
 from models.utils import DataUtils
+from .data_manager_interface import DataManagerInterface
 
 
 class FileDataManager(DataManagerInterface):
@@ -25,6 +25,7 @@ class FileDataManager(DataManagerInterface):
     def get_user_movies(self, user_id):
         """Get user-specific movies (not supported in file mode)."""
         raise NotImplementedError("User-specific movies not supported in FileDataManager.")
+
     # endregion
 
     # region CREATE
@@ -39,6 +40,7 @@ class FileDataManager(DataManagerInterface):
         data[id_column_val] = kwargs
         self.write_data(data)
         return data
+
     # endregion
 
     # region UPDATE
@@ -54,6 +56,7 @@ class FileDataManager(DataManagerInterface):
             data[item_key][key] = value
         self.__file_handler.write_data(data)
         return data
+
     # endregion
 
     # region DELETE

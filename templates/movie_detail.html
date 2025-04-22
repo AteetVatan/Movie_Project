@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie_detail.css') }}">
+</head>
+
 {% extends "base.html" %}
 
 {% block content %}
@@ -93,7 +106,7 @@
                 {% if movie.notes %}
                 <div class="block">
                     <h2 class="subtitle">Notes</h2>
-                    <div class="notification">
+                    <div class="notes">
                         {{ movie.notes }}
                     </div>
                 </div>
@@ -102,4 +115,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/movie_detail.js') }}"></script>
 {% endblock %}

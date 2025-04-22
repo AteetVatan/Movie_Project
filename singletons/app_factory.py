@@ -1,9 +1,10 @@
-# app_factory.py
+""" The App Factory Module."""
 
-from flask import Flask
-from .db_instance import get_db
 import os
+from flask import Flask
 from config import config
+from .db_instance import DbInstance
+
 
 def create_app():
     """Create and configure the Flask application."""
@@ -17,17 +18,17 @@ def create_app():
     # Ensure data directory exists
     data_dir = os.path.join(os.getcwd(), config.DB_DIRECTORY)
     os.makedirs(data_dir, exist_ok=True)
-    
+
     # Path setup for SQLite DB
     db_path = os.path.join(os.getcwd(), config.DB_DIRECTORY, config.DB_NAME)
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
-    # Configurations    
+    # Configurations
     app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI.format(db_path=db_path)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQLALCHEMY_TRACK_MODIFICATIONS
-    
+
     # Initialize extensions
-    db = get_db()
+    db = DbInstance.get_db()
     db.init_app(app)
 
     # Register Blueprints if any (optional)

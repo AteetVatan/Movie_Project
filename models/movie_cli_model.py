@@ -27,11 +27,11 @@ class MovieCliModel(BaseModel):
         else:
             self.data_manager = FileDataManager(file_path, file_type)
 
-        super().__init__(self.data_manager)        
+        super().__init__(self.data_manager)
         self.__html_file_handler = HtmlFileHandlerModel()
 
     # region CREATE
-    def add_data(self, **kwargs):
+    def get_imdb_data(self, **kwargs):
         """Adds a new movie to the data."""
         try:
             # use api to get year and rating for title
@@ -190,9 +190,9 @@ class MovieCliModel(BaseModel):
             best_movies = [x for x in self.data.values() if x[Dc.rating()] == max(rating_data)]
             worst_movies = [x for x in self.data.values() if x[Dc.rating()] == min(rating_data)]
             MovieCliView.display_data_stats(best_movies=best_movies,
-                                         worst_movies=worst_movies,
-                                         avg_rating=avg_rating,
-                                         median_rating=median_rating)
+                                            worst_movies=worst_movies,
+                                            avg_rating=avg_rating,
+                                            median_rating=median_rating)
         except ValueError as e:
             raise e
 
@@ -244,7 +244,7 @@ class MovieCliModel(BaseModel):
         except ValueError as e:
             raise e
 
-    def save_data(self) -> bool:
+    def save_data(self):
         """Method to save movie."""
         try:
             self.data_manager.write_data(self.data)

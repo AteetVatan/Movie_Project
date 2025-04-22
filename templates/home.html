@@ -7,378 +7,207 @@
     <title>{{ title }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #000000;
-            --secondary-color: #6c3;
-            --accent-color: #f60;
-            --text-color: #666;
-            --light-bg: #f8f8f8;
-        }
-
-        body {
-            background-color: var(--light-bg);
-            color: var(--text-color);
-            font-family: Arial, sans-serif;
-        }
-
-        .header {
-            background-color: var(--primary-color);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .header .title {
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .search-container {
-            background: white;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .movie-card {
-            background: white;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-            transition: transform 0.2s;
-        }
-
-        .movie-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .movie-poster {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .movie-info {
-            padding: 1rem;
-        }
-
-        .movie-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .movie-meta {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .metascore {
-            background-color: var(--secondary-color);
-            color: white;
-            font-weight: bold;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            margin-right: 1rem;
-        }
-
-        .user-score {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-
-        .movie-details {
-            font-size: 0.9rem;
-            color: var(--text-color);
-        }
-
-        .movie-details p {
-            margin-bottom: 0.3rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--secondary-color);
-        }
-
-        .nav-tabs {
-            margin-bottom: 2rem;
-        }
-
-        .nav-tabs .tab {
-            padding: 0.5rem 1rem;
-            color: var(--text-color);
-            text-decoration: none;
-            border-bottom: 2px solid transparent;
-        }
-
-        .nav-tabs .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--secondary-color);
-            font-weight: bold;
-        }
-
-        .nav-tabs .tab:hover {
-            color: var(--primary-color);
-        }
-
-        .sidebar {
-            background: white;
-            padding: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .sidebar-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .sidebar-list li:last-child {
-            border-bottom: none;
-        }
-
-        .sidebar-list a {
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        .sidebar-list a:hover {
-            color: var(--primary-color);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 
-<body>
-    <header class="header">
-        <div class="container">
-            <h1 class="title">{{ title }}</h1>
-        </div>
-    </header>
+{% extends "base.html" %}
 
-    <div class="container">
-        <!-- Search Section -->
-        <div class="search-container">
-            <form action="/search" method="POST">
-                <div class="field has-addons">
-                    <div class="control is-expanded">
-                        <div class="dropdown is-active">
-                            <div class="dropdown-trigger">
-                                <input class="input is-large" type="text" name="search_text" id="searchInput"
-                                    placeholder="{{ search_placeholder }}" autocomplete="off">
-                            </div>
-                            <div class="dropdown-menu" id="searchDropdown" role="menu">
-                                <div class="dropdown-content">
-                                    <div class="dropdown-item">
-                                        <p>Start typing to search movies...</p>
+{% block content %}
+<div class="container">
+    <!-- Search Section -->
+    <div class="search-container">
+        <div class="columns">
+            <div class="column is-9">
+                <form action="/search" method="POST" id="searchForm">
+                    <div class="field has-addons">
+                        <div class="control is-expanded">
+                            <div class="dropdown is-active">
+                                <div class="dropdown-trigger">
+                                    <input class="input is-large" type="text" name="search_text" id="searchInput"
+                                        placeholder="{{ search_placeholder }}" autocomplete="off">
+                                </div>
+                                <div class="dropdown-menu" id="searchDropdown" role="menu">
+                                    <div class="dropdown-content">
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="control">
+                            <button type="submit" class="button is-info is-large" id="searchButton">
+                                <span class="icon">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="control">
-                        <button type="submit" class="button is-info is-large">
+                </form>
+            </div>
+            <div class="column is-3">
+                <div class="dropdown is-right" id="sortDropdown">
+                    <div class="dropdown-trigger">
+                        <button class="button is-large is-fullwidth" aria-haspopup="true" aria-controls="dropdown-menu">
                             <span class="icon">
-                                <i class="fas fa-search"></i>
+                                <i class="fas fa-sort"></i>
+                            </span>
+                            <span>Sort By</span>
+                            <span class="icon">
+                                <i class="fas fa-angle-down"></i>
                             </span>
                         </button>
                     </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="columns">
-            <!-- Main Content -->
-            <div class="column is-three-quarters">
-                <h2 class="section-title">Latest Movies</h2>
-                <div class="columns is-multiline">
-                    {% for movie in movies %}
-                    <div class="column is-one-third">
-                        <a href="/movie/{{ movie.id }}" class="movie-link">
-                            <div class="movie-card">
-                                <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="movie-poster"
-                                    onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
-                                <div class="movie-info">
-                                    <h3 class="movie-title">{{ movie.title }}</h3>
-                                    <div class="movie-meta">
-                                        <span class="metascore">{{ movie.rating }}</span>
-                                        <span class="user-score">{{ movie.year }}</span>
-                                    </div>
-                                    <div class="movie-details">
-                                        <p><strong>Director:</strong> {{ movie.director }}</p>
-                                        <p><strong>Genre:</strong> {{ movie.genre }}</p>
-                                        <p><strong>Country:</strong> {{ movie.country }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
+                    <div class="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a href="#" class="dropdown-item" data-sort="rating" data-order="desc">
+                                <span class="icon"><i class="fas fa-star"></i></span>
+                                <span>Rating (High to Low)</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="rating" data-order="asc">
+                                <span class="icon"><i class="fas fa-star"></i></span>
+                                <span>Rating (Low to High)</span>
+                            </a>
+                            <hr class="dropdown-divider">
+                            <a href="#" class="dropdown-item" data-sort="year" data-order="desc">
+                                <span class="icon"><i class="fas fa-calendar"></i></span>
+                                <span>Year (Newest First)</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="year" data-order="asc">
+                                <span class="icon"><i class="fas fa-calendar"></i></span>
+                                <span>Year (Oldest First)</span>
+                            </a>
+                            <hr class="dropdown-divider">
+                            <a href="#" class="dropdown-item" data-sort="title" data-order="asc">
+                                <span class="icon"><i class="fas fa-font"></i></span>
+                                <span>Title (A-Z)</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="title" data-order="desc">
+                                <span class="icon"><i class="fas fa-font"></i></span>
+                                <span>Title (Z-A)</span>
+                            </a>
+                        </div>
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="column is-one-quarter">
-                <div class="sidebar">
-                    <h3 class="sidebar-title">Top Rated</h3>
-                    <ul class="sidebar-list">
-                        {% for movie in movies[:5] %}
-                        <li>
-                            <a href="/movie/{{ movie.id }}">{{ movie.title }}</a>
-                            <span class="metascore">{{ movie.rating }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div class="sidebar mt-4">
-                    <h3 class="sidebar-title">Coming Soon</h3>
-                    <ul class="sidebar-list">
-                        {% for movie in movies[5:10] %}
-                        <li>
-                            <a href="/movie/{{ movie.id }}">{{ movie.title }}</a>
-                            <span class="user-score">{{ movie.year }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const searchDropdown = document.getElementById('searchDropdown');
-            let searchTimeout;
-
-            // Update the movie cards to link to movie details
-            document.querySelectorAll('.movie-card').forEach(card => {
-                const movieId = card.dataset.movieId;
-                if (movieId) {
-                    card.style.cursor = 'pointer';
-                    card.addEventListener('click', () => {
-                        window.location.href = `/movie/${movieId}`;
-                    });
-                }
-            });
-
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                const searchText = e.target.value.trim();
-
-                if (searchText.length < 2) {
-                    searchDropdown.querySelector('.dropdown-content').innerHTML = `
-                        <div class="dropdown-item">
-                            <p>Type at least 2 characters to search...</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                searchTimeout = setTimeout(() => {
-                    fetch('/search', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: `search_text=${encodeURIComponent(searchText)}`
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            const dropdownContent = searchDropdown.querySelector('.dropdown-content');
-                            if (data.movies && data.movies.length > 0) {
-                                dropdownContent.innerHTML = data.movies
-                                    .map(movieList => {
-                                        const movie = movieList; // Get the movie object
-                                        return `
-                                            <a href="/movie/${movie.id}" class="dropdown-item">
-                                                <div class="media">
-                                                    <div class="media-left">
-                                                        <img src="${movie.poster || 'https://via.placeholder.com/50x75?text=No+Poster'}" 
-                                                             alt="${movie.title}" 
-                                                             style="width: 50px; height: 75px; object-fit: cover;"
-                                                             onerror="this.src='https://via.placeholder.com/50x75?text=No+Poster'">
-                                                    </div>
-                                                    <div class="media-content">
-                                                        <div class="content">
-                                                            <p class="has-text-weight-bold mb-1">${movie.title}</p>
-                                                            <p class="is-size-7 mb-1">
-                                                                <span class="icon has-text-warning"><i class="fas fa-star"></i></span>
-                                                                ${movie.rating || 'N/A'} | 
-                                                                <span class="icon"><i class="fas fa-calendar"></i></span>
-                                                                ${movie.year || 'N/A'}
-                                                            </p>
-                                                            <p class="is-size-7 mb-1">
-                                                                <span class="icon"><i class="fas fa-user-tie"></i></span>
-                                                                ${movie.director || 'N/A'} |
-                                                                <span class="icon"><i class="fas fa-film"></i></span>
-                                                                ${movie.genre ? movie.genre.join(', ') : 'N/A'}
-                                                            </p>
-                                                            <p class="is-size-7 has-text-grey">
-                                                                <span class="icon"><i class="fas fa-users"></i></span>
-                                                                ${movie.actors ? movie.actors.slice(0, 2).join(', ') : 'N/A'}
-                                                                ${movie.actors && movie.actors.length > 2 ? '...' : ''}
-                                                            </p>
-                                                            <p class="is-size-7 has-text-grey is-italic">
-                                                                ${movie.plot ? movie.plot.substring(0, 100) + (movie.plot.length > 100 ? '...' : '') : ''}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        `;
-                                    }).join('');
-                            } else {
-                                dropdownContent.innerHTML = `
-                                <div class="dropdown-item">
-                                    <p>No movies found matching "${searchText}"</p>
+    <div class="columns">
+        <!-- Main Content -->
+        <div class="column is-three-quarters">
+            <h2 class="section-title">Latest Movies</h2>
+            <div class="columns is-multiline">
+                {% for movie in movies %}
+                <div class="column is-one-third">
+                    <a href="/movie/{{ movie.id }}" class="movie-link">
+                        <div class="movie-card">
+                            <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="movie-poster"
+                                onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+                            <div class="movie-info">
+                                <h3 class="movie-title">{{ movie.title }}</h3>
+                                <div class="movie-meta">
+                                    <span class="metascore">{{ movie.rating }}</span>
+                                    <span class="user-score">{{ movie.year }}</span>
                                 </div>
-                            `;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            searchDropdown.querySelector('.dropdown-content').innerHTML = `
-                            <div class="dropdown-item has-text-danger">
-                                <span class="icon"><i class="fas fa-exclamation-circle"></i></span>
-                                <span>Error searching movies. Please try again.</span>
+                                <div class="movie-details">
+                                    <p><strong>Director:</strong> {{ movie.director }}</p>
+                                    <p><strong>Genre:</strong> {{ movie.genre|join(', ') if movie.genre is iterable
+                                        and movie.genre is not string else movie.genre }}</p>
+                                    <p><strong>Country:</strong> {{ movie.country|join(', ') if movie.country is
+                                        iterable and movie.country is not string else movie.country }}</p>
+                                </div>
                             </div>
-                        `;
-                        });
-                }, 300); // Debounce for 300ms
-            });
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-                    searchDropdown.style.display = 'none';
-                } else {
-                    searchDropdown.style.display = 'block';
-                }
-            });
-        });
-    </script>
-</body>
+        <!-- Sidebar -->
+        <div class="column is-one-quarter">
+            <div class="sidebar">
+                <h3 class="sidebar-title">
+                    <span class="icon">
+                        <i class="fas fa-star"></i>
+                    </span>
+                    Top Rated
+                </h3>
+                <ul class="sidebar-list">
+                    {% for movie in movies[:5] %}
+                    <li>
+                        <a href="/movie/{{ movie.id }}">{{ movie.title }}</a>
+                        <span class="metascore">{{ movie.rating }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="sidebar mt-4" id="usersList">
+                <h3 class="sidebar-title">
+                    <span class="icon">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    Users
+                    <a href="/users" class="button is-small is-info is-pulled-right" title="Add User">
+                        <span class="icon">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                    </a>
+                </h3>
+                <ul class="sidebar-list">
+                    <li class="has-text-centered has-text-grey">
+                        <span class="icon">
+                            <i class="fas fa-spinner fa-pulse"></i>
+                        </span>
+                        Loading users...
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar mt-4">
+                <h3 class="sidebar-title">
+                    <span class="icon">
+                        <i class="fas fa-film"></i>
+                    </span>
+                    Movie of the Day
+                </h3>
+                {% if movies %}
+                {% set random_movie = movies|random %}
+                <div class="movie-of-day">
+                    <img src="{{ random_movie.poster }}" alt="{{ random_movie.title }}" class="sidebar-poster"
+                        onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+                    <h4 class="movie-of-day-title">{{ random_movie.title }}</h4>
+                    <div class="movie-of-day-meta">
+                        <span class="tag is-primary">{{ random_movie.rating }}</span>
+                        <span class="tag is-info">{{ random_movie.year }}</span>
+                    </div>
+                    <div class="movie-of-day-details">
+                        <p><strong>Director:</strong> {{ random_movie.director }}</p>
+                        <p><strong>Genre:</strong> {{ random_movie.genre|join(', ') if random_movie.genre is
+                            iterable and random_movie.genre is not string else random_movie.genre }}</p>
+                        <p><strong>Actors:</strong> {{ random_movie.actors|join(', ') if random_movie.actors is
+                            iterable and random_movie.actors is not string else random_movie.actors }}</p>
+                        <p class="movie-plot"><strong>Plot:</strong> {{ random_movie.plot }}</p>
+                        {% if random_movie.awards %}
+                        <p><strong>Awards:</strong> {{ random_movie.awards }}</p>
+                        {% endif %}
+                    </div>
+                    <a href="/movie/{{ random_movie.id }}" class="button is-small is-fullwidth is-info mt-2">
+                        <span class="icon">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                        <span>View Details</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}
 
 </html>
