@@ -59,7 +59,7 @@ class MovieFlaskModel(BaseModel):
     def add_movie_to_user(self, user_id, movie):
         """Add a movie to user's favorites."""
         # modify current data
-        movie_id = movie.get(Dc.id())
+        movie_id = movie.get(Dc.imdb_id())
         if self.data.get(movie_id) is None:
             # Movie isn't found, add it to self.data
             self.data[movie_id] = movie
