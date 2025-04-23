@@ -38,7 +38,7 @@ class MovieFlaskController:
             try:
                 search_text = request.form.get('search_text', '')
                 movies = self.movie_model.search_data(search_text)
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'movies': movies,
                         'search_text': search_text
@@ -49,7 +49,7 @@ class MovieFlaskController:
                     search_placeholder="Search for another movie"
                 )
             except ValueError as e:
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'error': str(e),
                         'movies': {}
@@ -66,7 +66,7 @@ class MovieFlaskController:
                 user_data = []
 
                 if not users:
-                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    if MovieFlaskController.is_xhr(request):
                         return jsonify({
                             'success': True,
                             'users': [],
@@ -85,7 +85,7 @@ class MovieFlaskController:
                         'movie_count': movie_count
                     })
 
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'success': True,
                         'users': user_data
@@ -124,7 +124,7 @@ class MovieFlaskController:
                         Dc.awards(): movie.awards
                     })
 
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'success': True,
                         'user': {
@@ -153,7 +153,7 @@ class MovieFlaskController:
                 if not movie:
                     raise ValueError("Movie not found")
 
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'success': True,
                         'movie': movie
@@ -184,7 +184,7 @@ class MovieFlaskController:
                 success = self.movie_model.add_user(name)
 
                 if success:
-                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    if MovieFlaskController.is_xhr(request):
                         return jsonify({
                             'success': True,
                             'message': f'User {name} added successfully'
@@ -214,7 +214,7 @@ class MovieFlaskController:
                         success = self.movie_model.add_movie_to_user(user_id, movie)
 
                         if success:
-                            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                            if MovieFlaskController.is_xhr(request):
                                 return jsonify({
                                     'success': True,
                                     'message': f'Movie "{movie["title"]}" added successfully',
@@ -223,7 +223,7 @@ class MovieFlaskController:
                                 })
                             return redirect(url_for('user_movies', user_id=user_id))
 
-                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        if MovieFlaskController.is_xhr(request):
                             return jsonify({
                                 'success': False,
                                 'error': 'Movie already in user\'s favorites'
@@ -264,7 +264,7 @@ class MovieFlaskController:
                     success = self.movie_model.update_data(movie_id, notes=notes)
 
                     if success:
-                        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        if MovieFlaskController.is_xhr(request):
                             return jsonify({
                                 'success': True,
                                 'message': f'Notes updated successfully for "{movie["title"]}"',
@@ -310,7 +310,7 @@ class MovieFlaskController:
             try:
                 success = self.movie_model.remove_movie_from_user(user_id, movie_id)
                 if success:
-                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    if MovieFlaskController.is_xhr(request):
                         return jsonify({
                             'success': True,
                             'message': 'Movie removed successfully'
@@ -347,7 +347,7 @@ class MovieFlaskController:
                 order = request.args.get('order', 'asc')
 
                 movies = self.movie_model.sort_data(sort_by, order == 'desc')
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                if MovieFlaskController.is_xhr(request):
                     return jsonify({
                         'success': True,
                         'movies': movies
@@ -367,7 +367,7 @@ class MovieFlaskController:
         @self.app.errorhandler(400)
         def bad_request(e):
             """Error handler for bad requests."""
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if MovieFlaskController.is_xhr(request):
                 return jsonify({
                     'success': False,
                     'error': 'Bad Request',
@@ -380,7 +380,7 @@ class MovieFlaskController:
         @self.app.errorhandler(404)
         def page_not_found(e):
             """Error handler for page not found."""
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if MovieFlaskController.is_xhr(request):
                 return jsonify({
                     'success': False,
                     'error': 'Not Found',
@@ -393,7 +393,7 @@ class MovieFlaskController:
         @self.app.errorhandler(500)
         def internal_server_error(e):
             """Error handler for internal server error."""
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if MovieFlaskController.is_xhr(request):
                 return jsonify({
                     'success': False,
                     'error': 'Internal Server Error',
@@ -402,3 +402,7 @@ class MovieFlaskController:
             return render_template('error.html',
                                    message="An internal server error occurred",
                                    title="500 - Internal Server Error"), 500
+
+    @staticmethod
+    def is_xhr(req) -> bool:
+        return req.headers.get('X-Requested-With') == 'XMLHttpRequest'

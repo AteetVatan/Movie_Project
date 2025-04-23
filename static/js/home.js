@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const sortDropdown = document.getElementById('sortDropdown');
     const usersList = document.querySelector('#usersList .sidebar-list');
 
+    // Hide the search dropdown
+    searchDropdown.style.display = 'none';
+
     // Handle search form submission
     if (searchForm) {
         searchForm.addEventListener('submit', function (e) {
